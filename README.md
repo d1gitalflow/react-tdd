@@ -1,4 +1,4 @@
-# react-tdd
+# Testing ground - TDD React
 ```
 This repository will serve as a testing ground for all things react
 ```
