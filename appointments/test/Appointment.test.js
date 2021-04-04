@@ -3,7 +3,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import { Appointment } from '../Appointment.js'
+import { Appointment, AppointmentDayView } from '../Appointment.js'
 
 
 //describes a 'test suite', which is a set of tests with a given name
@@ -27,11 +27,8 @@ describe('Appointment', () => {
         //create customer obj literal
         customer = { firstName: 'Ashley' };
 
-
-
         //final render ReactDOM.render(reactElement,container)
         render(<Appointment customer={customer} />);
-
 
         //in each invdidual/single test there can be 
         //as many as expectations we want
@@ -46,4 +43,30 @@ describe('Appointment', () => {
         //represents the text content of the node and its descendants.
         expect(container.textContent).toMatch('Jordan');
     });
+})
+
+describe('AppointmentDayView', () => {
+    let container;
+
+    beforeEach(() => {
+        container = document.createElement('div');
+    })
+
+    const render = (component) => {
+        return ReactDOM.render(component, container);
+    }
+
+    it('renders a div with the right id', () => {
+        const today = new Date();
+        const appointments = [
+            { startsAt: today.setHours(12, 0) },
+            { startsAt: today.setHours(13, 0) }
+        ];
+        render(<AppointmentDayView appointments={appointments} />)
+        //all <div>'s with id="appointmentsDayView"
+        expect(container.querySelector('div#appointmentsDayView')).not.toBeNull();
+        //parent node ir <ol> ordered list, and how many children it has
+        //needs to be two
+        expect(container.querySelector('ol').children).toHaveLength(2);
+    })
 })
