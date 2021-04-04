@@ -11,19 +11,26 @@ import { Appointment } from '../Appointment.js'
 describe('Appointment', () => {
     let container;
     let customer;
-    
+
     //code in this block is executed before each test
-    beforeEach(()=>{
+    beforeEach(() => {
         //create <div></div>
         container = document.createElement('div')
     })
-    
+
+    const render = (component) => {
+        return ReactDOM.render(component, container)
+    }
+
     //it defines a single/individual test
     it('renders the customer first name', () => {
         //create customer obj literal
         customer = { firstName: 'Ashley' };
+
+
+
         //final render ReactDOM.render(reactElement,container)
-        ReactDOM.render(<Appointment customer={customer} />, container);
+        render(<Appointment customer={customer} />);
 
 
         //in each invdidual/single test there can be 
@@ -34,7 +41,7 @@ describe('Appointment', () => {
     //another single/individual test
     it('renders another customer first name', () => {
         customer = { firstName: 'Jordan' };
-        ReactDOM.render(<Appointment customer={customer} />, container);
+        render(<Appointment customer={customer} />);
         //access <div> textContent ->
         //represents the text content of the node and its descendants.
         expect(container.textContent).toMatch('Jordan');
