@@ -69,4 +69,25 @@ describe('AppointmentDayView', () => {
         //needs to be two
         expect(container.querySelector('ol').children).toHaveLength(2);
     })
+
+    it('renders each appointment in an <li>', () => {
+        const today = new Date();
+        const appointments = [
+            { startsAt: today.setHours(12, 0) },
+            { startsAt: today.setHours(13, 0) }
+        ];
+        render(<AppointmentDayView appointments={appointments} />);
+        //querySelectorAll() returns a NodeList representing a list of elements 
+        //matching the specified group of selectors, NodeList is possible to iterate
+        //as an array, using Array.from(NodeList), has .length property 
+        expect(container.querySelectorAll('li')).toHaveLength(2);
+        expect(
+            container.querySelectorAll('li')[0].textContent
+        ).toEqual('12:00');
+        expect(
+            container.querySelectorAll('li')[1].textContent
+        ).toEqual('13:00');
+
+
+    })
 })

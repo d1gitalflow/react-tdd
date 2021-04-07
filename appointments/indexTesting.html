@@ -13,13 +13,18 @@
             <li>3</li>
 
         </ol>
+        <ol></ol>
     </div>
 
     <script>
-        //lets count the <div id="testing"><div> children
-            const children = document.querySelector('#testing')
+        //lets count the <ol> children
+            const children = document.querySelector('ol')
+            const value = document.querySelectorAll('ol');
             //print total children
-            console.log(children.children.length)
+            console.log(children.children.length)//3
+            //use querySelectorAll() .length (how many <ol> in the document)
+            console.log(value)
+            
     </script>
 </body>
 
