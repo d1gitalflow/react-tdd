@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useState} from 'react';
 
 export const Appointment = ({ customer: { firstName } }) => { return <div>{firstName}</div> }
 
@@ -8,19 +8,21 @@ export const AppointmentDayView = ({ appointments }) => {
         const [h, m] = new Date(startsAt).toTimeString().split(':');
         return `${h}:${m}`;
     }
-
-    return <div id="appointmentsDayView">
-        <ol>
-            {appointments.map((appointment) => {
+    const [selectedAppointment, setSelectedAppointment] = useState(0)//initial state
+    return (<div id="appointmentsDayView">
+        <ol>                           {/**i is the optional index value, counts each iterated element */}     
+            {appointments.map((appointment,i) => {
                 return <li key={appointment.startsAt}>
-                    {appointmentTimeOfDay(appointment.startsAt)}
+                    <button type="button" onClick={()=>{return setSelectedAppointment(i)}}>
+                        {appointmentTimeOfDay(appointment.startsAt)}
+                    </button>
                 </li>
             })}
         </ol>
         {appointments.length === 0 ? (
             <p>There are no appointments scheduled for today.</p>
-        ) : (
-            <Appointment {...appointments[0]} />
+        ) : (                               //initial state 0
+            <Appointment {...appointments[selectedAppointment]} />
         )}
-    </div>;
+    </div> );
 }

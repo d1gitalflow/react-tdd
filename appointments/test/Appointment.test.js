@@ -3,6 +3,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+//testing utils
+import ReactTestUtils from 'react-dom/test-utils';
+
+//import Appointment component
 import { Appointment, AppointmentDayView } from '../Appointment.js'
 
 
@@ -56,12 +60,20 @@ describe('AppointmentDayView', () => {
         return ReactDOM.render(component, container);
     }
 
+    const today = new Date();
+    const appointments = [
+        {
+            startsAt: today.setHours(12, 0),
+            customer: { firstName: 'Ashley' }
+        },
+        {
+            startsAt: today.setHours(13, 0),
+            customer: { firstName: 'Jordan' }
+        }
+    ];
+
     it('renders a div with the right id', () => {
-        const today = new Date();
-        const appointments = [
-            { startsAt: today.setHours(12, 0) },
-            { startsAt: today.setHours(13, 0) }
-        ];
+        
         render(<AppointmentDayView appointments={appointments} />)
         //all <div>'s with id="appointmentsDayView"
         expect(container.querySelector('div#appointmentsDayView')).not.toBeNull();
@@ -71,11 +83,7 @@ describe('AppointmentDayView', () => {
     })
 
     it('renders each appointment in an <li>', () => {
-        const today = new Date();
-        const appointments = [
-            { startsAt: today.setHours(12, 0) },
-            { startsAt: today.setHours(13, 0) }
-        ];
+        
         render(<AppointmentDayView appointments={appointments} />);
         //querySelectorAll() returns a NodeList representing a list of elements 
         //matching the specified group of selectors, NodeList is possible to iterate
@@ -97,18 +105,31 @@ describe('AppointmentDayView', () => {
     })
 
     it('selects the first appointment by default', () => {
-        const today = new Date();
-        const appointments = [
-            {
-                startsAt: today.setHours(12, 0),
-                customer: { firstName: 'Ashley' }
-            },
-            {
-                startsAt: today.setHours(13, 0),
-                customer: { firstName: 'Jordan' }
-            }
-        ];
+        
         render(<AppointmentDayView appointments={appointments} />);
         expect(container.textContent).toMatch('Ashley');
     });
+
+    it('has a button element in each li', () => {
+        
+        render(<AppointmentDayView appointments={appointments} />);
+        expect(
+            //selects all <button> element tags where <li> is a parent
+            container.querySelectorAll('li > button')
+        ).toHaveLength(2);
+        expect(                                          //type attribute for <button> elem tag
+            container.querySelectorAll('li > button')[0].type
+        ).toEqual('button');
+        //note: remember querySelectorAll() returns a array-like NodeList obj, can be turned to array for iteration with Array.from(NodeList)
+    })
+
+    it('renders another appointment when selected', () => {
+        
+        render(<AppointmentDayView appointments={appointments} />);
+        const button = container.querySelectorAll('button')[1];
+        ReactTestUtils.Simulate.click(button);//to simulte the click
+        expect(container.textContent).toMatch('Jordan');
+        //NOTE: 'container.textContent' is like saying I want
+        //this text to appear somewhere, but I don't care where.
+    })
 })
