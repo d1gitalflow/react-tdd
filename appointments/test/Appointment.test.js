@@ -88,6 +88,27 @@ describe('AppointmentDayView', () => {
             container.querySelectorAll('li')[1].textContent
         ).toEqual('13:00');
 
-
     })
+
+    it('initially shows a message saying there are no appointments today', () => {
+        //empty array means map() will not run and will just show "There are no..."
+        render(<AppointmentDayView appointments={[]} />)
+        expect(container.textContent).toMatch('There are no appointments scheduled for today.')
+    })
+
+    it('selects the first appointment by default', () => {
+        const today = new Date();
+        const appointments = [
+            {
+                startsAt: today.setHours(12, 0),
+                customer: { firstName: 'Ashley' }
+            },
+            {
+                startsAt: today.setHours(13, 0),
+                customer: { firstName: 'Jordan' }
+            }
+        ];
+        render(<AppointmentDayView appointments={appointments} />);
+        expect(container.textContent).toMatch('Ashley');
+    });
 })
