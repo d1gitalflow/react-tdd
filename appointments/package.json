@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "build":"webpack"
+    "build": "webpack"
   },
   "repository": {
     "type": "git",
@@ -31,8 +31,8 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.13.10",
+    "faker": "^5.5.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   }
-  
 }
