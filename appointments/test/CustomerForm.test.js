@@ -20,4 +20,14 @@ describe('CustomerForm',()=>{
         render(<CustomerForm />);
         expect(container.querySelector('form[id="customer"]')).not.toBeNull();
     })
+
+    it('renders the first name field as a text box',() => {
+        render(<CustomerForm />);
+        //form('customer') = <form id="customer">
+        //For there to be a form element with the name firstName
+        const field = form('customer').elements.firstName; //firstName = name attr 
+        expect(field).not.toBeNull();
+        expect(field.tagName).toEqual('INPUT'); //tagName always needs to be upper size
+        expect(field.type).toEqual('text');
+    })
 });
