@@ -13,12 +13,12 @@ describe('CustomerForm', () => {
 
     //'render' obj is a function with one parameter waiting to get passed one argument
     beforeEach(() => {
-        ({ render, container } = createContainer())        
+        ({ render, container } = createContainer())
     });
 
     //selector <form id=""
     const form = id => container.querySelector(`form[id="${id}"]`);
-    //access name="storesValue"
+    //access name="storesValueATTR"
     const firstNameField = () => form('customer').elements.firstName;
 
     //checks form element
@@ -41,8 +41,29 @@ describe('CustomerForm', () => {
         expectToBeInputFieldOfTypeText(firstNameField());
     })
 
-    it('includes the existing value for the first name',()=>{
-        render(<CustomerForm firstName={"Ashley"}/>);
+    it('includes the existing value for the first name', () => {
+        render(<CustomerForm firstName={"Ashley"} />);
         expect(firstNameField().value).toEqual('Ashley');
+    })
+
+    it('renders as a text box', () => {
+        render(<CustomerForm />);
+        expectToBeInputFieldOfTypeText(firstNameField());
+    });
+
+    const labelFor = formElement =>
+        container.querySelector(`label[for="${formElement}"]`);
+
+    //remember <label for="blabla"> should be equal on <input id="blabla" name="blabla">
+    it('render a label for the first name field', () => {
+        render(<CustomerForm />);
+        expect(labelFor('firstName')).not.toBeNull();
+        expect(labelFor('firstName').textContent).toEqual('First name');
+    })
+
+    it('assigns an id that matches the label id to the first name field',()=>{
+        render(<CustomerForm />);
+        //remember firstNameField access the name="storesValueATTR".id
+        expect(firstNameField().id).toEqual('firstName')        
     })
 });
