@@ -14,17 +14,28 @@
 
         </ol>
         <ol></ol>
+
+        <form id="my-form">
+            <input type="text" name="firstName">
+            <input type="text" name="full-name">
+            <input type="password" name="password">
+        </form>
     </div>
 
     <script>
         //lets count the <ol> children
-            const children = document.querySelector('ol')
-            const value = document.querySelectorAll('ol');
-            //print total children
-            console.log(children.children.length)//3
-            //use querySelectorAll() .length (how many <ol> in the document)
-            console.log(value)
-            
+        const children = document.querySelector('ol')
+        const value = document.querySelectorAll('ol');
+        //print total children
+        console.log(children.children.length)//3
+        //use querySelectorAll() .length (how many <ol> in the document)
+        console.log(value)
+
+        const accessForm = document.querySelector('#my-form').elements;
+        console.log(accessForm)
+
+
+
     </script>
 </body>
 
