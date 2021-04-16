@@ -1,6 +1,8 @@
 import React from 'react';
 import { createContainer } from './domManipulators';
 import { CustomerForm } from '../src/CustomerForm';
+//react test utils
+import ReactTestUtils from 'react-dom/test-utils'
 
 
 //a test suite
@@ -61,9 +63,32 @@ describe('CustomerForm', () => {
         expect(labelFor('firstName').textContent).toEqual('First name');
     })
 
-    it('assigns an id that matches the label id to the first name field',()=>{
+    it('assigns an id that matches the label id to the first name field', () => {
         render(<CustomerForm />);
         //remember firstNameField access the name="storesValueATTR".id
-        expect(firstNameField().id).toEqual('firstName')        
+        expect(firstNameField().id).toEqual('firstName')
+    })
+
+    it('renders a label for the first name field', () => {
+        render(<CustomerForm />);
+        //access the  <label htmlFor="firstName">First name</label>
+        expect(labelFor('firstName').textContent).toEqual('First name');
+    })
+
+    //async test - waits on the sucess or failure of the promise resolve or reject, to 
+    //pass or reject the test
+    it('save existing first name when submit', async () => {
+        expect.hasAssertions(); //returns true(if it has 1 or more assertions) or false 
+        //pass 'Ashley'
+        render(<CustomerForm firstName="Ashley"
+            //assert phase is inside the onSubmit handler
+            //pass the callback function to onSubmit handler
+            onSubmit={( {firstName} ) => {
+                return expect(firstName).toEqual('Ashley')
+            }} />)
+
+            
+        //simulates adding submit button as a <input type="submit" value="Submit"> in jest    
+        await ReactTestUtils.Simulate.submit(form('customer'));    
     })
 });
