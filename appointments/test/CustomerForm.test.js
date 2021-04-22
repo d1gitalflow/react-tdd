@@ -30,81 +30,89 @@ describe('CustomerForm', () => {
         expect(formElement.type).toEqual('text');
     };
 
-    it('renders a form', () => {
-        render(<CustomerForm />);
-        expect(form('customer')).not.toBeNull();
-    })
+    describe('first name field', () => {
+        it('renders as a text box', () => {
+            render(<CustomerForm />);
+            //to access form controls contained in <form> such as: button, input , etc
+            //nodeList = HTMLFormElement.elements returns HTMLFormControlsCollection
+            //const field = form('customer').elements.firstName; //firstName is the name="firstName" which is a property, name="" attr stores the value=""
+            expectToBeInputFieldOfTypeText(firstNameField());
+        })
 
-    it('renders the first name field as a text box', () => {
-        render(<CustomerForm />);
-        //to access form controls contained in <form> such as: button, input , etc
-        //nodeList = HTMLFormElement.elements returns HTMLFormControlsCollection
-        //const field = form('customer').elements.firstName; //firstName is the name="firstName" which is a property, name="" attr stores the value=""
-        expectToBeInputFieldOfTypeText(firstNameField());
-    })
+        it('includes the existing value', () => {
+            render(<CustomerForm firstName={"Ashley"} />);
+            expect(firstNameField().value).toEqual('Ashley');
+        })
 
-    it('includes the existing value for the first name', () => {
-        render(<CustomerForm firstName={"Ashley"} />);
-        expect(firstNameField().value).toEqual('Ashley');
-    })
-
-    it('renders as a text box', () => {
-        render(<CustomerForm />);
-        expectToBeInputFieldOfTypeText(firstNameField());
-    });
-
-    const labelFor = formElement =>
+        //access form label function
+        const labelFor = formElement =>
         container.querySelector(`label[for="${formElement}"]`);
 
-    //remember <label for="blabla"> should be equal on <input id="blabla" name="blabla">
-    it('render a label for the first name field', () => {
-        render(<CustomerForm />);
-        expect(labelFor('firstName')).not.toBeNull();
-        expect(labelFor('firstName').textContent).toEqual('First name');
-    })
+        //remember <label for="blabla"> should be equal on <input id="blabla" name="blabla">
+        it('renders a label', () => {
+            render(<CustomerForm />);
+            expect(labelFor('firstName')).not.toBeNull();
+            expect(labelFor('firstName').textContent).toEqual('First name');
+        })
 
-    it('assigns an id that matches the label id to the first name field', () => {
-        render(<CustomerForm />);
-        //remember firstNameField access the name="storesValueATTR".id
-        expect(firstNameField().id).toEqual('firstName')
-    })
-
-    it('renders a label for the first name field', () => {
-        render(<CustomerForm />);
-        //access the  <label htmlFor="firstName">First name</label>
-        expect(labelFor('firstName').textContent).toEqual('First name');
-    })
-
-    //async test - waits on the sucess or failure of the promise resolve or reject, to 
-    //pass or reject the test
-    it('save existing first name when submit', async () => {
-        expect.hasAssertions(); //returns true(if it has 1 or more assertions) or false 
-        //pass 'Ashley'
-        render(<CustomerForm firstName="Ashley"
-            //assert phase is inside the onSubmit handler
-            //pass the callback function to onSubmit handler
-            onSubmit={({ firstName }) => {
-                return expect(firstName).toEqual('Ashley')
-            }} />)
+        it('assigns an id that matches the label id ', () => {
+            render(<CustomerForm />);
+            //remember firstNameField access the name="storesValueATTR".id
+            expect(firstNameField().id).toEqual('firstName')
+        })
 
 
-        //simulates adding submit button as a <input type="submit" value="Submit"> in jest    
-        await ReactTestUtils.Simulate.submit(form('customer'));
-    })
+        //async test - waits on the sucess or failure of the promise resolve or reject, to 
+        //pass or reject the test
+        it('save existing value when submit', async () => {
+            expect.hasAssertions(); //returns true(if it has 1 or more assertions) or false 
+            //pass 'Ashley'
+            render(<CustomerForm firstName="Ashley"
+                //assert phase is inside the onSubmit handler
+                //pass the callback function to onSubmit handler
+                onSubmit={({ firstName }) => {
+                    return expect(firstName).toEqual('Ashley')
+                }} />)
 
-    it('saves new first name when submited', async () => {
-        expect.hasAssertions();
-        render(<CustomerForm
-            firstName={'Ashley'}
-            onSubmit={({ firstName }) => {
-                return expect(firstName).toEqual('Jamie');
-            }} />)
-                                        //onChange event  //access const firstNameField = () => form('customer').elements.firstName;
-            await ReactTestUtils.Simulate.change(firstNameField(),{
-                //changes value="" to 'Jamie
-                target:{value:'Jamie'}
-            })
 
+            //simulates adding submit button as a <input type="submit" value="Submit"> in jest    
             await ReactTestUtils.Simulate.submit(form('customer'));
+        })
+
+        it('saves new value when submited', async () => {
+            expect.hasAssertions();
+            render(<CustomerForm
+                firstName={'Ashley'}
+                onSubmit={({ firstName }) => {
+                    return expect(firstName).toEqual('Jamie');
+                }} />)
+            //onChange event  //access const firstNameField = () => form('customer').elements.firstName;
+            await ReactTestUtils.Simulate.change(firstNameField(), {
+                //changes value="" to 'Jamie
+                target: { value: 'Jamie' }
+            })
+    
+            await ReactTestUtils.Simulate.submit(form('customer'));
+        })
+
     })
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
+    
 });
