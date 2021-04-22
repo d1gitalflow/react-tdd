@@ -83,12 +83,28 @@ describe('CustomerForm', () => {
         render(<CustomerForm firstName="Ashley"
             //assert phase is inside the onSubmit handler
             //pass the callback function to onSubmit handler
-            onSubmit={( {firstName} ) => {
+            onSubmit={({ firstName }) => {
                 return expect(firstName).toEqual('Ashley')
             }} />)
 
-            
+
         //simulates adding submit button as a <input type="submit" value="Submit"> in jest    
-        await ReactTestUtils.Simulate.submit(form('customer'));    
+        await ReactTestUtils.Simulate.submit(form('customer'));
+    })
+
+    it('saves new first name when submited', async () => {
+        expect.hasAssertions();
+        render(<CustomerForm
+            firstName={'Ashley'}
+            onSubmit={({ firstName }) => {
+                return expect(firstName).toEqual('Jamie');
+            }} />)
+                                        //onChange event  //access const firstNameField = () => form('customer').elements.firstName;
+            await ReactTestUtils.Simulate.change(firstNameField(),{
+                //changes value="" to 'Jamie
+                target:{value:'Jamie'}
+            })
+
+            await ReactTestUtils.Simulate.submit(form('customer'));
     })
 });
