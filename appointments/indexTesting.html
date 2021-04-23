@@ -18,7 +18,7 @@
         <form id="my-form">
             <input type="text" name="firstName">
             <input type="text" name="full-name">
-            <input type="password" name="password">
+            <input type="password" name="password" value='yes'>
         </form>
     </div>
 
@@ -31,8 +31,9 @@
         //use querySelectorAll() .length (how many <ol> in the document)
         console.log(value)
 
+        //access elements form
         const accessForm = document.querySelector('#my-form').elements;
-        console.log(accessForm)
+        console.log(accessForm['password']['value'])
 
 
 

@@ -14,14 +14,20 @@ describe('CustomerForm', () => {
     //independent of the other tests.
 
     //'render' obj is a function with one parameter waiting to get passed one argument
+    //still works for nested describes()
     beforeEach(() => {
         ({ render, container } = createContainer())
     });
 
     //selector <form id=""
     const form = id => container.querySelector(`form[id="${id}"]`);
+
     //access name="storesValueATTR"
-    const firstNameField = () => form('customer').elements.firstName;
+    //const firstNameField = () => form('customer').elements.firstName;
+
+    //access to html elements inside form function
+    //pass the value of name=""
+    const field = name => form('customer').elements[name];
 
     //checks form element
     const expectToBeInputFieldOfTypeText = formElement => {
@@ -30,70 +36,103 @@ describe('CustomerForm', () => {
         expect(formElement.type).toEqual('text');
     };
 
-    describe('first name field', () => {
-        it('renders as a text box', () => {
+    //access form label function
+    const labelFor = formElement =>
+        container.querySelector(`label[for="${formElement}"]`);
+
+
+
+
+    //it test on parent describe scope
+    const itRendersAsATextBox = (fieldName) => {
+        return it('renders as a text box', () => {
             render(<CustomerForm />);
             //to access form controls contained in <form> such as: button, input , etc
             //nodeList = HTMLFormElement.elements returns HTMLFormControlsCollection
             //const field = form('customer').elements.firstName; //firstName is the name="firstName" which is a property, name="" attr stores the value=""
-            expectToBeInputFieldOfTypeText(firstNameField());
+            expectToBeInputFieldOfTypeText(field(fieldName));
         })
+    }
 
-        it('includes the existing value', () => {
-            render(<CustomerForm firstName={"Ashley"} />);
-            expect(firstNameField().value).toEqual('Ashley');
+    //it test on parent describe scope
+    //just looking to pass a value and see if it returns the same value as we access field('firstName') === name="firstName"
+    const itIncludesTheExistingValue = (fieldName) => {
+        return it('includes the existing value', () => {
+            //object unloads properties (firstName:'value), then is passed
+            render(<CustomerForm {...{ [fieldName]: 'value' }} />);
+            expect(field(fieldName).value).toEqual('value');
         })
-
-        //access form label function
-        const labelFor = formElement =>
-        container.querySelector(`label[for="${formElement}"]`);
-
-        //remember <label for="blabla"> should be equal on <input id="blabla" name="blabla">
-        it('renders a label', () => {
+    }
+    //remember <label for="blabla"> should be equal on <input id="blabla" name="blabla">
+    const itRendersALabel = (fieldName, result) => {
+        return it('renders a label', () => {
             render(<CustomerForm />);
-            expect(labelFor('firstName')).not.toBeNull();
-            expect(labelFor('firstName').textContent).toEqual('First name');
+            expect(labelFor(fieldName)).not.toBeNull();
+            expect(labelFor(fieldName).textContent).toEqual(result);
         })
+    }
 
-        it('assigns an id that matches the label id ', () => {
+    const itAssignsAnIdThatMatchesTheLabelId = (fieldName) => {
+        return it('assigns an id that matches the label id ', () => {
             render(<CustomerForm />);
             //remember firstNameField access the name="storesValueATTR".id
-            expect(firstNameField().id).toEqual('firstName')
+            expect(field(fieldName).id).toEqual(fieldName)
         })
+    }
 
-
-        //async test - waits on the sucess or failure of the promise resolve or reject, to 
-        //pass or reject the test
-        it('save existing value when submit', async () => {
+    //async test - waits on the sucess or failure of the promise resolve or reject, to 
+    //pass or reject the test
+    const itSubmitsExistingValue = (fieldName, existingValue) => {
+        return it('save existing value when submit', async () => {
             expect.hasAssertions(); //returns true(if it has 1 or more assertions) or false 
             //pass 'Ashley'
-            render(<CustomerForm firstName="Ashley"
+            render(<CustomerForm {...{ [fieldName]: existingValue }}
                 //assert phase is inside the onSubmit handler
                 //pass the callback function to onSubmit handler
                 onSubmit={({ firstName }) => {
-                    return expect(firstName).toEqual('Ashley')
+                    return expect(firstName).toEqual(existingValue)
                 }} />)
 
 
             //simulates adding submit button as a <input type="submit" value="Submit"> in jest    
             await ReactTestUtils.Simulate.submit(form('customer'));
         })
+    }
 
-        it('saves new value when submited', async () => {
+    //bit complex test, lots of refractoring
+    const itSubmitsNewValue = (fieldName, value) => {
+        return it('saves new value when submited', async () => {
             expect.hasAssertions();
             render(<CustomerForm
-                firstName={'Ashley'}
-                onSubmit={({ firstName }) => {
-                    return expect(firstName).toEqual('Jamie');
+                    //gets passed as {firstName:'existingValue'} <-obj
+                {...{[fieldName]:'existingValue'}}
+                onSubmit={(props) => {
+                    return expect(props[fieldName]).toEqual(value);
                 }} />)
             //onChange event  //access const firstNameField = () => form('customer').elements.firstName;
-            await ReactTestUtils.Simulate.change(firstNameField(), {
+            await ReactTestUtils.Simulate.change(field(fieldName), {
                 //changes value="" to 'Jamie
-                target: { value: 'Jamie' }
+                target: { value:value }
             })
-    
+
             await ReactTestUtils.Simulate.submit(form('customer'));
         })
+    }
+
+
+
+    describe('first name field', () => {
+        itRendersAsATextBox('firstName');
+        itIncludesTheExistingValue('firstName');
+        itRendersALabel('firstName', 'First name');
+        itAssignsAnIdThatMatchesTheLabelId('firstName');
+        itSubmitsExistingValue('firstName', 'Ashley')
+        itSubmitsNewValue('firstName','Jamie')
+
+
+
+
+
 
     })
 
@@ -104,7 +143,6 @@ describe('CustomerForm', () => {
 
 
 
-    
 
 
 
@@ -114,5 +152,6 @@ describe('CustomerForm', () => {
 
 
 
-    
+
+
 });
