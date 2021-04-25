@@ -117,8 +117,8 @@ const itSubmitsNewValue = (fieldName, value) => {
         //Got refractored
         //onChange event  //access const firstNameField = () => form('customer').elements.firstName;
         await ReactTestUtils.Simulate.change(field(fieldName), {
-            //changes value="" to 'Jamie
-            target: { value: value }
+            //changes value="" to 'Jamie and name="fieldName"
+            target: { value: value, name:fieldName }
         })
 
         await ReactTestUtils.Simulate.submit(form('customer'));
