@@ -1,6 +1,9 @@
 const obj = {
   value:1,
-  value:2
+  values:2,
+  asser:3
 }
 
-console.log(obj.value)
+const {value:newne,...others} = obj;
+
+console.log(newne)
