@@ -100,62 +100,68 @@ describe('CustomerForm', () => {
 
             //simulates adding submit button as a <input type="submit" value="Submit"> in jest    
             await ReactTestUtils.Simulate.submit(form('customer'));
-    })
+        })
     }
 
-//bit complex test, lots of refractoring
-const itSubmitsNewValue = (fieldName, value) => {
-    return it('saves new value when submited', async () => {
-        expect.hasAssertions();
-        render(<CustomerForm
-            //gets passed as {firstName:'existingValue'} <-obj
-            //this is an JS object that got converted to firstName={existingValue}, and gets passed as object
-            {...{ [fieldName]: 'existingValue' }}
-            onSubmit={(props) => {
-                return expect(props[fieldName]).toEqual(value);
-            }} />)
-        //Got refractored
-        //onChange event  //access const firstNameField = () => form('customer').elements.firstName;
-        await ReactTestUtils.Simulate.change(field(fieldName), {
-            //changes value="" to 'Jamie and name="fieldName"
-            target: { value: value, name:fieldName }
+    //bit complex test, lots of refractoring
+    const itSubmitsNewValue = (fieldName, value) => {
+        return it('saves new value when submited', async () => {
+            expect.hasAssertions();
+            render(<CustomerForm
+                //gets passed as {firstName:'existingValue'} <-obj
+                //this is an JS object that got converted to firstName={existingValue}, and gets passed as object
+                {...{ [fieldName]: 'existingValue' }}
+                onSubmit={(props) => {
+                    return expect(props[fieldName]).toEqual(value);
+                }} />)
+            //Got refractored
+            //onChange event  //access const firstNameField = () => form('customer').elements.firstName;
+            await ReactTestUtils.Simulate.change(field(fieldName), {
+                //changes value="" to 'Jamie and name="fieldName"
+                target: { value: value, name: fieldName }
+            })
+
+            await ReactTestUtils.Simulate.submit(form('customer'));
         })
+    }
 
-        await ReactTestUtils.Simulate.submit(form('customer'));
+
+    //first name field 
+    describe('first name field', () => {
+        itRendersAsATextBox('firstName');
+        itIncludesTheExistingValue('firstName');
+        itRendersALabel('firstName', 'First name');
+        itAssignsAnIdThatMatchesTheLabelId('firstName');
+        itSubmitsExistingValue('firstName', 'Ashley')
+        itSubmitsNewValue('firstName', 'Jamie');
     })
-}
 
+    //last name field
+    describe('last name field', () => {
+        itRendersAsATextBox('lastName');
+        itIncludesTheExistingValue('lastName');
+        itRendersALabel('lastName', 'Last name');
+        itAssignsAnIdThatMatchesTheLabelId('lastName');
+        itSubmitsExistingValue('lastName', 'Morgan');
+        itSubmitsNewValue('lastName', 'Marting')
 
-//first name field 
-describe('first name field', () => {
-    itRendersAsATextBox('firstName');
-    itIncludesTheExistingValue('firstName');
-    itRendersALabel('firstName', 'First name');
-    itAssignsAnIdThatMatchesTheLabelId('firstName');
-    itSubmitsExistingValue('firstName', 'Ashley')
-    itSubmitsNewValue('firstName', 'Jamie');
-})
+    })
 
-//last name field
-describe('last name field', () => {
-    itRendersAsATextBox('lastName');
-    itIncludesTheExistingValue('lastName');
-    itRendersALabel('lastName', 'Last name');
-    itAssignsAnIdThatMatchesTheLabelId('lastName');
-    itSubmitsExistingValue('lastName', 'Morgan');
-    itSubmitsNewValue('lastName', 'Marting')
+    //phone number field
+    describe('phone number field', () => {
+        itRendersAsATextBox('phoneNumber');
+        itIncludesTheExistingValue('phoneNumber');
+        itRendersALabel('phoneNumber', 'Phone number');
+        itAssignsAnIdThatMatchesTheLabelId('phoneNumber');
+        itSubmitsExistingValue('phoneNumber', '12345');
+        itSubmitsNewValue('phoneNumber', '67890');
+    })
 
-})
-
-//phone number field
-describe('phone number field',()=>{
-    itRendersAsATextBox('phoneNumber');
-    itIncludesTheExistingValue('phoneNumber');
-    itRendersALabel('phoneNumber', 'Phone number');
-    itAssignsAnIdThatMatchesTheLabelId('phoneNumber');
-    itSubmitsExistingValue('phoneNumber', '12345');
-    itSubmitsNewValue('phoneNumber', '67890');
-})
+    it('has a submit button',()=>{
+        render(<CustomerForm />);
+        const submitButton = container.querySelector('input[type="submit"]');
+        expect(submitButton).not.toBeNull();
+    })
 
 
 

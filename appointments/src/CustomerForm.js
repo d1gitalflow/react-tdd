@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 export const CustomerForm = ({ firstName, lastName, phoneNumber, onSubmit }) => {
 
-    const [customer, setCustomer] = useState({ firstName, lastName, phoneNumber, onSubmit });
-
+    const [customer, setCustomer] = useState({ firstName, lastName, phoneNumber});
 
     /*  //returns 'existingValue' and 'Jamie'
      //{target:{value:'Jamie'}} gets passed to handleChangeFirst function, comes from where? - NO
@@ -38,17 +37,22 @@ export const CustomerForm = ({ firstName, lastName, phoneNumber, onSubmit }) => 
      }  */
 
     //Refractored to:
+    //updates as long there's a change..
     const handleChange = ({ target }) => {
-        setCustomer((customer) => {
+        setCustomer((prevState) => {
+            console.log(prevState)
             return {
-                ...customer,
+                ...prevState,
                 [target.name]: target.value
             }
         })
     }
 
+    //from onChange an object gets passed to handleChange, we access the values using "target" property
+    //like target.name to access name="" or target.value to access name="", if we don't pass anything to react function 
+    //component, then they start with undefined properties, can test with console.log()
     return (
-        <form id="customer" onSubmit={() => { return onSubmit(customer) }}>
+        <form id="customer" onSubmit={()=>{return onSubmit(customer)}}>
             <label htmlFor="firstName">First name</label>
             <input
                 id="firstName"
@@ -74,6 +78,11 @@ export const CustomerForm = ({ firstName, lastName, phoneNumber, onSubmit }) => 
                 value={phoneNumber}
                 onChange={handleChange}
             />
+            <input
+            type="submit"
+            value="Add"
+            />
+            
         </form>
     );
 }

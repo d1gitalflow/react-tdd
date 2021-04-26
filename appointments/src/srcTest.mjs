@@ -1,9 +1,18 @@
-const obj = {
-  value:1,
-  values:2,
-  asser:3
+
+
+function yarr() {
+  return {
+    value: 1,
+    value: 2,
+    value: 333
+  }
 }
 
-const {value:newne,...others} = obj;
+const val = yarr().value
+console.log(val)
 
-console.log(newne)
+function a(a){
+  return a;
+}
+
+console.log(a())
