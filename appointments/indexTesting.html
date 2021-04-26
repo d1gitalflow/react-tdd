@@ -19,6 +19,8 @@
             <input type="text" name="firstName">
             <input type="text" name="full-name">
             <input type="password" name="password" value='yes'>
+            <select name="service"></select>
+
         </form>
     </div>
 
@@ -33,7 +35,7 @@
 
         //access elements form
         const accessForm = document.querySelector('#my-form').elements;
-        console.log(accessForm['password']['value'])
+        console.log(accessForm.service)
 
 
 

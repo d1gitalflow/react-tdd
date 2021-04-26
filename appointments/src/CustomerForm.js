@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 export const CustomerForm = ({ firstName, lastName, phoneNumber, onSubmit }) => {
 
-    const [customer, setCustomer] = useState({ firstName, lastName, phoneNumber});
+    const [customer, setCustomer] = useState({ firstName, lastName, phoneNumber });
 
     /*  //returns 'existingValue' and 'Jamie'
      //{target:{value:'Jamie'}} gets passed to handleChangeFirst function, comes from where? - NO
@@ -40,7 +40,6 @@ export const CustomerForm = ({ firstName, lastName, phoneNumber, onSubmit }) => 
     //updates as long there's a change..
     const handleChange = ({ target }) => {
         setCustomer((prevState) => {
-            console.log(prevState)
             return {
                 ...prevState,
                 [target.name]: target.value
@@ -52,7 +51,7 @@ export const CustomerForm = ({ firstName, lastName, phoneNumber, onSubmit }) => 
     //like target.name to access name="" or target.value to access name="", if we don't pass anything to react function 
     //component, then they start with undefined properties, can test with console.log()
     return (
-        <form id="customer" onSubmit={()=>{return onSubmit(customer)}}>
+        <form id="customer" onSubmit={() => { return onSubmit(customer) }}>
             <label htmlFor="firstName">First name</label>
             <input
                 id="firstName"
@@ -79,10 +78,10 @@ export const CustomerForm = ({ firstName, lastName, phoneNumber, onSubmit }) => 
                 onChange={handleChange}
             />
             <input
-            type="submit"
-            value="Add"
+                type="submit"
+                value="Add"
             />
-            
+
         </form>
     );
 }
