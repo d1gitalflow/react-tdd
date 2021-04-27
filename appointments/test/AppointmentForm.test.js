@@ -1,6 +1,7 @@
 import React from 'react';
 import { createContainer } from './domManipulators';
 import { AppointmentForm } from '../src/AppointmentForm';
+import ReactTestUtils from 'react-dom/test-utils'
 
 describe('AppointmentForm', () => {
     let render, container;
@@ -13,18 +14,68 @@ describe('AppointmentForm', () => {
     });
 
 
+
+
     const form = id => container.querySelector(`form[id="${id}"]`);
     //access name="" inside form
     const field = name => form('appointment').elements[name];
-
+    //access label
+    const label = (name) => { return container.querySelector(`label[for="${name}"]`) }
+    //labelid
+    const labelId = (id) => { return container.querySelector(`label[id="${id}"`) }
 
     it('renders a form', () => {
         render(<AppointmentForm />);
         expect(form('appointment')).not.toBeNull();
     })
 
+
+
+
     //.elements.`name=""`.
     describe('service field', () => {
+
+
+        /* <form id="my-form">
+            <label for="cars">Choose a car:</label>
+            <select name="service" id="cars">
+                <option value="volvo">Volvo</option>
+                <option value="saab">Saab</option>
+                <option value="opel">Opel</option>
+                <option value="audi">Audi</option>
+            </select>
+            <br><br>
+            <input type="submit" value="Submit"></input> */
+        it('renders a label', () => {
+            render(<AppointmentForm />)
+            expect(label('service')).not.toBeNull()
+            expect(label('service').textContent).toEqual('Salon service')
+            expect(labelId('service').id).toEqual('service');
+            expect(form('appointment').elements[0].id).toEqual('service')
+        })
+
+
+
+        //Pre-select the value
+        const findOption = (dropdownNode, textContent) => {
+            const options = Array.from(dropdownNode.childNodes);
+            //find() returns the first sucessful result
+            //return boolean
+            return options.find((option) => { return option.textContent === textContent })
+        }
+
+
+
+
+
+
+        it('pre-selects the existing value', () => {
+            const services = ['Cut', 'Blow-dry'];
+            render(<AppointmentForm selectableServices={services} service={'Blow-dry'} />);
+            const option = findOption(field('service'), 'Blow-dry');
+            expect(option.selected).toBeTruthy();
+        })
+
         it('renders as select box', () => {
             render(<AppointmentForm />);
             expect(field('service')).not.toBeNull();
@@ -40,6 +91,7 @@ describe('AppointmentForm', () => {
 
 
 
+        //kind of deprecated because the function component is using .defaultProps inside the component itself
         it('lists all salon services', () => {
             const selectableServices = ['Cut', 'Blow-dry'];
             render(
@@ -55,13 +107,40 @@ describe('AppointmentForm', () => {
             );
             //iterate 'optionNodes' using map which returns .textContent
             const renderedServices = optionNodes.map(
-                node => { console.log(node.textContent); return node.textContent }
+                node => { return node.textContent }
             );
             //
             expect(renderedServices).toEqual(
                 expect.arrayContaining(selectableServices)
             );
         });
+
+
+        it('saves existing value when submited', async () => {
+            expect.hasAssertions();
+            render(<AppointmentForm
+                service={'Blow-dry'}
+                onSubmit={(props) => { return expect(props.service).toEqual('Blow-dry') }}
+            />)
+            //simply target the form id=""
+            await ReactTestUtils.Simulate.submit(form('appointment'))
+        })
+
+        it('saves new value when submited', async () => {
+            expect.hasAssertions();
+            render(<AppointmentForm
+                service={'Blow-dry'}
+                onSubmit={
+                    (props) => { return expect(props.service).toEqual('Cut') }
+                }
+            />)
+            await ReactTestUtils.Simulate.change(field('service'), {
+                target: { value: 'Cut' }
+            });
+
+            await ReactTestUtils.Simulate.submit(form('appointment'));
+        })
+
     })
 
 

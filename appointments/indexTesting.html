@@ -18,7 +18,7 @@
         <form id="my-form">
             <label for="cars">Choose a car:</label>
             <select name="service" id="cars">
-                <option value="volvo">Volvo</option>
+                <option value="volvo" name="yoyo">Volvo</option>
                 <option value="saab">Saab</option>
                 <option value="opel">Opel</option>
                 <option value="audi">Audi</option>
@@ -46,6 +46,8 @@
         console.log(arrayed)
         const storedPrint = arrayed.map((el)=>{return el.textContent})
         console.log(storedPrint)
+
+        console.log(document.querySelector('#my-form').elements['service'])
 
 
     </script>
