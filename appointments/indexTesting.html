@@ -16,10 +16,15 @@
         <ol></ol>
 
         <form id="my-form">
-            <input type="text" name="firstName">
-            <input type="text" name="full-name">
-            <input type="password" name="password" value='yes'>
-            <select name="service"></select>
+            <label for="cars">Choose a car:</label>
+            <select name="service" id="cars">
+                <option value="volvo">Volvo</option>
+                <option value="saab">Saab</option>
+                <option value="opel">Opel</option>
+                <option value="audi">Audi</option>
+            </select>
+            <br><br>
+            <input type="submit" value="Submit">
 
         </form>
     </div>
@@ -35,8 +40,12 @@
 
         //access elements form
         const accessForm = document.querySelector('#my-form').elements;
-        console.log(accessForm.service)
-
+        console.log(accessForm.service.childNodes)
+        console.log(accessForm.service.childNodes[0].textContent)
+        const arrayed = Array.from(accessForm.service.childNodes)
+        console.log(arrayed)
+        const storedPrint = arrayed.map((el)=>{return el.textContent})
+        console.log(storedPrint)
 
 
     </script>
