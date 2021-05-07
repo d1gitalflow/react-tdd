@@ -187,9 +187,9 @@ describe('AppointmentForm', () => {
             );
             //test length
             expect(dates).toHaveLength(7);
-            expect(dates[0].textContent).toEqual('Sat 01');
-            expect(dates[1].textContent).toEqual('Sun 02');
-            expect(dates[6].textContent).toEqual('Fri 07');
+            expect(dates[0].textContent).toEqual('Fri 07');
+            expect(dates[1].textContent).toEqual('Sat 08');
+            expect(dates[6].textContent).toEqual('Thu 13');
         })
 
 

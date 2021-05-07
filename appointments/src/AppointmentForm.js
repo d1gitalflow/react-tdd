@@ -6,7 +6,7 @@ const dailyTimeSlots = (salonOpensAt, salonClosesAt) => {
     const totalSlots = (salonClosesAt - salonOpensAt) * 2;
     const startTime = new Date().setHours(salonOpensAt, 0, 0, 0);
     const increment = 30 * 60 * 1000;
-    
+
     /* Example returned timestamp 
       [
         1620288000000, 1620289800000,
@@ -20,30 +20,33 @@ const dailyTimeSlots = (salonOpensAt, salonClosesAt) => {
         1620316800000, 1620318600000,
         1620320400000, 1620322200000
       ] */
-    
-    
+
+
     return Array(totalSlots).fill([startTime]).reduce((acc, _, i) => { return acc.concat([startTime + (i * increment)]) });
 }
 
+//receives as: new Date()
 const weeklyDateValues = (startDate) => {
-    const midnight = new Date(startDate).setHours(0,0,0,0);
-    const increment = 24 * 60 * 60 * 1000
-    return Array(7).fill([midnight]).reduce((acc,_,i)=>{return acc.concat([midnight + (i*increment)])})
-
-}
+    const midnight = new Date(startDate).setHours(0, 0, 0, 0);
+    const increment = 24 * 60 * 60 * 1000;
+    return Array(7)
+        .fill([midnight])
+        .reduce((acc, _, i) =>
+            acc.concat([midnight + (i * increment)])
+        );
+};
 
 const toTimeValue = (timestamp) => {
 
     //converts to: 09:00 ... til 19:00(string) for each timestamp
     return new Date(timestamp).toTimeString().substring(0, 5);
 }
-const toShortDate = (timestamp) => {
-    console.log(new Date(timestamp));
-    const [day, dayOfMonth] = new Date(timestamp)
-    .toDateString()
-    .split(' ');
+const toShortDate = timestamp => {
+    const [day, , dayOfMonth] = new Date(timestamp)
+        .toDateString()
+        .split(' ');
     return `${day} ${dayOfMonth}`;
-}
+};
 
 
 //displays hours (TimeTableSlot) component
@@ -62,10 +65,11 @@ const TimeTableSlot = ({
         <table id="time-slots">
             <thead>
                 <tr>
-                   {dates.map((d) => {return <th key={d}>{toShortDate(d)}</th>})} 
+                    <th />
+                    {dates.map((d) => { return <th key={d}>{toShortDate(d)}</th> })}
                 </tr>
             </thead>
-            
+
             <tbody>
                 {timeSlots.map((timeSlot) => {
                     return (
@@ -126,6 +130,7 @@ export const AppointmentForm = ({ selectableServices, service, onSubmit,
 }
 
 AppointmentForm.defaultProps = {
+    today: new Date(),
     salonOpensAt: 9,
     salonClosesAt: 19,
     selectableServices: [
@@ -135,5 +140,5 @@ AppointmentForm.defaultProps = {
         'Beard trim',
         'Cut & beard trim',
         'Extensions'],
-    today: new Date()    
+    
 };
