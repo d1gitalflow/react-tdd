@@ -42,7 +42,7 @@ const toTimeValue = (timestamp) => {
     return new Date(timestamp).toTimeString().substring(0, 5);
 }
 const toShortDate = timestamp => {
-    const [day, , dayOfMonth] = new Date(timestamp)
+    const [day, ,dayOfMonth] = new Date(timestamp)
         .toDateString()
         .split(' ');
     return `${day} ${dayOfMonth}`;
@@ -75,6 +75,11 @@ const TimeTableSlot = ({
                     return (
                         <tr key={timeSlot}>
                             <th>{toTimeValue(timeSlot)}</th>
+                            {dates.map((date)=>{return (
+                                <td key={date}>
+                                    <input type="radio"></input>
+                                </td>
+                            )})}
                         </tr>
                     )
                 })}
@@ -140,5 +145,5 @@ AppointmentForm.defaultProps = {
         'Beard trim',
         'Cut & beard trim',
         'Extensions'],
-    
+
 };

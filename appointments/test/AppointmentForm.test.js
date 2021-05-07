@@ -160,7 +160,6 @@ describe('AppointmentForm', () => {
             />);
 
             //returns static 'NodeList'
-            //
             const timesOfDay = timeSlotTable().querySelectorAll('tbody >* th');
 
             expect(timesOfDay).toHaveLength(4);
@@ -190,6 +189,35 @@ describe('AppointmentForm', () => {
             expect(dates[0].textContent).toEqual('Fri 07');
             expect(dates[1].textContent).toEqual('Sat 08');
             expect(dates[6].textContent).toEqual('Thu 13');
+        })
+
+        //availableTimeSlots, which is an array of objects that list times that are still available.
+
+        it('renders a radio button for each time slot', () => {
+
+            const today = new Date();
+            const availableTimeSlots = [
+                //timestamp like: 1620893400000
+                { startsAt: today.setHours(9, 0, 0, 0) },
+                { startsAt: today.setHours(9, 30, 0, 0) }
+            ]
+            render(
+                <AppointmentForm
+                    availableTimeSlots={availableTimeSlots}
+                    today={today}
+                />
+            )
+            //access all 'td' table data cells within the <table id="time-slots">
+            const cells = timeSlotTable().querySelectorAll('td');
+            //access first 'td' cell and querySelector the <input type="radio"> check not to be null
+            expect(
+                cells[0].querySelector('input[type="radio"]')
+            ).not.toBeNull()
+            expect(
+                cells[7].querySelector('input[type="radio"]')
+            ).not.toBeNull();
+
+
         })
 
 
