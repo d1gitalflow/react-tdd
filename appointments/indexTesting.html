@@ -29,6 +29,43 @@
         </form>
     </div>
 
+    <div id="tableDiv">
+        <table id="tableId">
+            <tbody>
+                <tr>
+                    <th>header</th>
+                    <td>table data</td>
+                </tr>
+                <tr>
+                    <th>header1</th>
+                    <tr>
+                        <td>yeye</td>
+                    </tr>
+                    <tr>
+                        <tr>
+                            <tr>
+                                <td id="ele">minnnNested</td>
+                            </tr>
+                        </tr>
+                    </tr>
+                    <td>table data1</td>
+                </tr>
+                <tr>
+                    <th>header2</th>
+                    <td>table data2</td>
+                </tr>
+                <tr>
+                    <th>header3</th>
+                    <td>table data3</td>
+                </tr>
+            </thead>
+        </table>
+
+    </div>
+
+
+
+
     <script>
         //lets count the <ol> children
         const children = document.querySelector('ol')
@@ -48,6 +85,12 @@
         console.log(storedPrint)
 
         //console.log(document.querySelector('#my-form').elements['service'])
+
+
+
+        //------------------
+        const accessTableId = document.querySelector('#tableId');
+        console.log(accessTableId.querySelectorAll('tbody >* td[id="ele"]'))
 
 
     </script>

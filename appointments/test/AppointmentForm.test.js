@@ -148,6 +148,14 @@ describe('AppointmentForm', () => {
 
     describe('time slot table', () => {
 
+        //index param is string
+        const startsAtField = (index) => {
+            return (
+                container.querySelectorAll('input[name="startsAt"]')[index]
+            )
+        }
+        
+
         it('renders a table for time slots', () => {
             render(<AppointmentForm />);
             expect(timeSlotTable()).not.toBeNull();
@@ -161,6 +169,7 @@ describe('AppointmentForm', () => {
 
             //returns static 'NodeList'
             const timesOfDay = timeSlotTable().querySelectorAll('tbody >* th');
+            console.log(timesOfDay)
 
             expect(timesOfDay).toHaveLength(4);
             expect(timesOfDay[0].textContent).toEqual('09:00');
@@ -186,9 +195,9 @@ describe('AppointmentForm', () => {
             );
             //test length
             expect(dates).toHaveLength(7);
-            expect(dates[0].textContent).toEqual('Fri 07');
-            expect(dates[1].textContent).toEqual('Sat 08');
-            expect(dates[6].textContent).toEqual('Thu 13');
+            expect(dates[0].textContent).toEqual('Sat 08');
+            expect(dates[1].textContent).toEqual('Sun 09');
+            expect(dates[6].textContent).toEqual('Fri 14');
         })
 
         //availableTimeSlots, which is an array of objects that list times that are still available.
@@ -216,9 +225,39 @@ describe('AppointmentForm', () => {
             expect(
                 cells[7].querySelector('input[type="radio"]')
             ).not.toBeNull();
-
-
         })
+
+        it('does not render radio buttons for unavailable time slots', () => {
+            render(<AppointmentForm availableTimeSlots={[]} />);
+            const timesOfDay = timeSlotTable().querySelectorAll(
+                'input'
+            );
+            expect(timesOfDay).toHaveLength(0);
+        });
+
+
+        it('sets radio button values to the index of the corresponding appointment', () => {
+            const today = new Date();
+            const availableTimeSlots = [
+                { startsAt: today.setHours(9, 0, 0, 0) },
+                { startsAt: today.setHours(9, 30, 0, 0) }
+            ];
+
+            render(
+                <AppointmentForm
+                    availableTimeSlots={availableTimeSlots}
+                    today={today}
+                />);
+            expect(startsAtField(0).value).toEqual(
+                availableTimeSlots[0].startsAt.toString()
+            );
+            expect(startsAtField(1).value).toEqual(
+                availableTimeSlots[1].startsAt.toString()
+            );    
+        })
+
+
+
 
 
     })

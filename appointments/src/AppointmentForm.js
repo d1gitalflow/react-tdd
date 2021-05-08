@@ -42,25 +42,39 @@ const toTimeValue = (timestamp) => {
     return new Date(timestamp).toTimeString().substring(0, 5);
 }
 const toShortDate = timestamp => {
-    const [day, ,dayOfMonth] = new Date(timestamp)
+    const [day, , dayOfMonth] = new Date(timestamp)
         .toDateString()
         .split(' ');
     return `${day} ${dayOfMonth}`;
 };
+const mergeDateAndTime = (date, timeSlot) => {
+    const time = new Date(timeSlot);
+    return new Date(date).setHours(
+        time.getHours(),
+        time.getMinutes(),
+        time.getSeconds(),
+        time.getMilliseconds()
+    );
+};
+
+
 
 
 //displays hours (TimeTableSlot) component
 const TimeTableSlot = ({
     salonOpensAt,
     salonClosesAt,
-    today
+    today,
+    availableTimeSlots
 }) => {
     const timeSlots = dailyTimeSlots(
         salonOpensAt,
         salonClosesAt
     )
+    //dates returns an array from weeklyDateValues
     const dates = weeklyDateValues(today);
 
+    //tip: careful reviewing the .some method, we wait until it resolves, then we apply the ternary if to get only one output(first true result): <input type="radio" /> or null
     return (
         <table id="time-slots">
             <thead>
@@ -75,11 +89,19 @@ const TimeTableSlot = ({
                     return (
                         <tr key={timeSlot}>
                             <th>{toTimeValue(timeSlot)}</th>
-                            {dates.map((date)=>{return (
-                                <td key={date}>
-                                    <input type="radio"></input>
-                                </td>
-                            )})}
+                            {dates.map((date) => {
+                                return (
+                                    <td key={date}>
+
+                                        <RadioButtonIfAvailable
+                                        availableTimeSlots={availableTimeSlots}
+                                        date={date}
+                                        timeSlot={timeSlot}
+                                        />
+
+                                    </td>
+                                )
+                            })}
                         </tr>
                     )
                 })}
@@ -90,10 +112,33 @@ const TimeTableSlot = ({
 }
 
 
+const RadioButtonIfAvailable = ({
+    availableTimeSlots,
+    date,
+    timeSlot
+}) => {
+    const startsAt = mergeDateAndTime(date, timeSlot);
+    if (
+        availableTimeSlots.some(availableTimeSlot =>
+            availableTimeSlot.startsAt === startsAt
+        )
+    ) {
+        return (
+            <input
+                name="startsAt"
+                type="radio"
+                value={startsAt}
+            />);
+    }
+    return null;
+};
+
+
 export const AppointmentForm = ({ selectableServices, service, onSubmit,
     salonOpensAt,
     salonClosesAt,
-    today
+    today,
+    availableTimeSlots
 }) => {
 
     const [appointment, setAppointment] = useState({ service })
@@ -128,6 +173,7 @@ export const AppointmentForm = ({ selectableServices, service, onSubmit,
                 salonOpensAt={salonOpensAt}
                 salonClosesAt={salonClosesAt}
                 today={today}
+                availableTimeSlots={availableTimeSlots}
             />
         </form>)
 
@@ -136,6 +182,7 @@ export const AppointmentForm = ({ selectableServices, service, onSubmit,
 
 AppointmentForm.defaultProps = {
     today: new Date(),
+    availableTimeSlots: [],
     salonOpensAt: 9,
     salonClosesAt: 19,
     selectableServices: [
