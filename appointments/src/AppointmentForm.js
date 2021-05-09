@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 
 //receives opening and closing hours
 //returns 
@@ -65,7 +65,9 @@ const TimeTableSlot = ({
     salonOpensAt,
     salonClosesAt,
     today,
-    availableTimeSlots
+    availableTimeSlots,
+    checkedTimeSlot,
+    handleChange
 }) => {
     const timeSlots = dailyTimeSlots(
         salonOpensAt,
@@ -74,7 +76,6 @@ const TimeTableSlot = ({
     //dates returns an array from weeklyDateValues
     const dates = weeklyDateValues(today);
 
-    //tip: careful reviewing the .some method, we wait until it resolves, then we apply the ternary if to get only one output(first true result): <input type="radio" /> or null
     return (
         <table id="time-slots">
             <thead>
@@ -97,6 +98,8 @@ const TimeTableSlot = ({
                                         availableTimeSlots={availableTimeSlots}
                                         date={date}
                                         timeSlot={timeSlot}
+                                        checkedTimeSlot={checkedTimeSlot}
+                                        handleChange={handleChange}
                                         />
 
                                     </td>
@@ -115,9 +118,13 @@ const TimeTableSlot = ({
 const RadioButtonIfAvailable = ({
     availableTimeSlots,
     date,
-    timeSlot
+    timeSlot,
+    checkedTimeSlot,
+    handleChange
 }) => {
     const startsAt = mergeDateAndTime(date, timeSlot);
+    //if true then its pre-checked
+    const isChecked = startsAt === checkedTimeSlot;
     if (
         availableTimeSlots.some(availableTimeSlot =>
             availableTimeSlot.startsAt === startsAt
@@ -128,22 +135,31 @@ const RadioButtonIfAvailable = ({
                 name="startsAt"
                 type="radio"
                 value={startsAt}
+                checked={isChecked}
+                onChange={handleChange}
             />);
     }
     return null;
 };
 
 
-export const AppointmentForm = ({ selectableServices, service, onSubmit,
+export const AppointmentForm = ({ 
+    selectableServices, 
+    service, 
+    onSubmit,
     salonOpensAt,
     salonClosesAt,
     today,
-    availableTimeSlots
+    availableTimeSlots,
+    startsAt
 }) => {
 
-    const [appointment, setAppointment] = useState({ service })
+    const [appointment, setAppointment] = useState({ 
+        service,
+        startsAt
+    })
 
-    const handleChange = ({ target }) => {
+    const handleServiceChange = ({ target }) => {
         setAppointment(
             (prevAppointment) => {
                 return {
@@ -154,6 +170,13 @@ export const AppointmentForm = ({ selectableServices, service, onSubmit,
         )
     }
 
+    const handleStartAtChange = useCallback(
+        ({target})=>setAppointment((appointment)=>({
+            ...appointment,
+            startsAt:parseInt(target.value)
+        })),[]
+    )
+
     return (
         <form id="appointment" onSubmit={() => { return onSubmit(appointment) }}>
             <label htmlFor="service" id="service">Salon service</label>
@@ -161,7 +184,7 @@ export const AppointmentForm = ({ selectableServices, service, onSubmit,
                 id="service"
                 name="service"
                 value={service}
-                onChange={handleChange}
+                onChange={handleServiceChange}
                 readOnly>
                 <option />
                 {selectableServices.map(s => (
@@ -174,6 +197,8 @@ export const AppointmentForm = ({ selectableServices, service, onSubmit,
                 salonClosesAt={salonClosesAt}
                 today={today}
                 availableTimeSlots={availableTimeSlots}
+                checkedTimeSlot={appointment.startsAt}
+                handleChange={handleStartAtChange}
             />
         </form>)
 
@@ -181,8 +206,8 @@ export const AppointmentForm = ({ selectableServices, service, onSubmit,
 }
 
 AppointmentForm.defaultProps = {
-    today: new Date(),
     availableTimeSlots: [],
+    today: new Date(),
     salonOpensAt: 9,
     salonClosesAt: 19,
     selectableServices: [

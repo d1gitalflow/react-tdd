@@ -154,7 +154,13 @@ describe('AppointmentForm', () => {
                 container.querySelectorAll('input[name="startsAt"]')[index]
             )
         }
-        
+
+        const today = new Date();
+        const availableTimeSlots = [
+            { startsAt: today.setHours(9, 0, 0, 0) },
+            { startsAt: today.setHours(9, 30, 0, 0) }
+        ];
+
 
         it('renders a table for time slots', () => {
             render(<AppointmentForm />);
@@ -169,7 +175,6 @@ describe('AppointmentForm', () => {
 
             //returns static 'NodeList'
             const timesOfDay = timeSlotTable().querySelectorAll('tbody >* th');
-            console.log(timesOfDay)
 
             expect(timesOfDay).toHaveLength(4);
             expect(timesOfDay[0].textContent).toEqual('09:00');
@@ -185,7 +190,7 @@ describe('AppointmentForm', () => {
             expect(headerRow.firstChild.textContent).toEqual('');
         })
 
-        it('renders a week of available dates', () => {
+        it.skip('renders a week of available dates', () => {
             const today = new Date(2018, 11, 1);
             render(<AppointmentForm />);
             //querySelectorAll returns array-like static 'NodeList', which has properties to measure the length
@@ -237,12 +242,6 @@ describe('AppointmentForm', () => {
 
 
         it('sets radio button values to the index of the corresponding appointment', () => {
-            const today = new Date();
-            const availableTimeSlots = [
-                { startsAt: today.setHours(9, 0, 0, 0) },
-                { startsAt: today.setHours(9, 30, 0, 0) }
-            ];
-
             render(
                 <AppointmentForm
                     availableTimeSlots={availableTimeSlots}
@@ -253,8 +252,70 @@ describe('AppointmentForm', () => {
             );
             expect(startsAtField(1).value).toEqual(
                 availableTimeSlots[1].startsAt.toString()
-            );    
+            );
         })
+
+
+
+        /* const today = new Date();
+        const availableTimeSlots = [
+            { startsAt: today.setHours(9, 0, 0, 0) },
+            { startsAt: today.setHours(9, 30, 0, 0) }
+        ]; */
+
+        //startsAt={} receives the miliseconds(timestamp) from the first array element
+        //{ startsAt: today.setHours(9, 0, 0, 0) }
+        it('pre-selects the existing value', () => {
+            render(
+                <AppointmentForm
+                    availableTimeSlots={availableTimeSlots}
+                    today={today}
+                    startsAt={availableTimeSlots[0].startsAt}
+                />
+            )
+            //access to container.querySelectorAll('input[name="startsAt"]')[0]
+            expect(startsAtField(0).checked).toEqual(true)
+        })
+
+        //remeber onSubmit={} a callback is passed,
+        //uses value={}
+        it('saves existing value when submited', async () => {
+            expect.hasAssertions();
+            render(
+                <AppointmentForm
+                    availableTimeSlots={availableTimeSlots}
+                    today={today}
+                    startsAt={availableTimeSlots[0].startsAt}
+                    onSubmit={({ startsAt }) => { return expect(startsAt).toEqual(availableTimeSlots[0].startsAt) }}
+                />
+            );
+            ReactTestUtils.Simulate.submit(form('appointment'));
+        })
+
+        //changes value, and checks it.
+        it('saves new value when submited', async () => {
+            expect.hasAssertions();
+            render(
+                <AppointmentForm
+                    availableTimeSlots={availableTimeSlots}
+                    today={today}
+                    startAt={availableTimeSlots[0].startsAt}
+                    onSubmit={({ startsAt }) =>
+                        expect(startsAt).toEqual(
+                            availableTimeSlots[1].startsAt
+                        )
+                    }
+                />)
+            await ReactTestUtils.Simulate.change(startsAtField(1), {
+                target: {
+                    value: availableTimeSlots[1].startsAt.toString(),
+                    name: 'startAt'
+                }
+            })
+            await ReactTestUtils.Simulate.submit(form('appointment'))
+        })
+
+
 
 
 
