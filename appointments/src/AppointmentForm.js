@@ -95,11 +95,11 @@ const TimeTableSlot = ({
                                     <td key={date}>
 
                                         <RadioButtonIfAvailable
-                                        availableTimeSlots={availableTimeSlots}
-                                        date={date}
-                                        timeSlot={timeSlot}
-                                        checkedTimeSlot={checkedTimeSlot}
-                                        handleChange={handleChange}
+                                            availableTimeSlots={availableTimeSlots}
+                                            date={date}
+                                            timeSlot={timeSlot}
+                                            checkedTimeSlot={checkedTimeSlot}
+                                            handleChange={handleChange}
                                         />
 
                                     </td>
@@ -143,9 +143,9 @@ const RadioButtonIfAvailable = ({
 };
 
 
-export const AppointmentForm = ({ 
-    selectableServices, 
-    service, 
+export const AppointmentForm = ({
+    selectableServices,
+    service,
     onSubmit,
     salonOpensAt,
     salonClosesAt,
@@ -154,7 +154,7 @@ export const AppointmentForm = ({
     startsAt
 }) => {
 
-    const [appointment, setAppointment] = useState({ 
+    const [appointment, setAppointment] = useState({
         service,
         startsAt
     })
@@ -163,18 +163,22 @@ export const AppointmentForm = ({
         setAppointment(
             (prevAppointment) => {
                 return {
-                    ...prevAppointment, //previous service:'Blow-dry'
-                    service: target.value //updated to service:'Blow-dry'
+                    ...prevAppointment,
+                    service: target.value
                 }
             }
         )
     }
 
+    //parseInt() converts from String to Number
+    /*  The useCallback hook returns a memoized callback. That means you
+    always get the same reference back each time it's called, rather than a new
+    constant with a new reference. */
     const handleStartAtChange = useCallback(
-        ({target})=>setAppointment((appointment)=>({
+        ({ target }) => setAppointment((appointment) => ({
             ...appointment,
-            startsAt:parseInt(target.value)
-        })),[]
+            startsAt: parseInt(target.value)
+        })), []
     )
 
     return (

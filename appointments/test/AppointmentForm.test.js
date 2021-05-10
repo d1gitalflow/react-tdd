@@ -209,12 +209,7 @@ describe('AppointmentForm', () => {
 
         it('renders a radio button for each time slot', () => {
 
-            const today = new Date();
-            const availableTimeSlots = [
-                //timestamp like: 1620893400000
-                { startsAt: today.setHours(9, 0, 0, 0) },
-                { startsAt: today.setHours(9, 30, 0, 0) }
-            ]
+            
             render(
                 <AppointmentForm
                     availableTimeSlots={availableTimeSlots}
@@ -274,7 +269,8 @@ describe('AppointmentForm', () => {
                 />
             )
             //access to container.querySelectorAll('input[name="startsAt"]')[0]
-            expect(startsAtField(0).checked).toEqual(true)
+            expect(startsAtField(0).checked).toEqual(true);
+            expect(startsAtField(0).checked).toEqual(true);
         })
 
         //remeber onSubmit={} a callback is passed,
@@ -293,7 +289,7 @@ describe('AppointmentForm', () => {
         })
 
         //changes value, and checks it.
-        it('saves new value when submited', async () => {
+        it('saves new value when submited',  () => {
             expect.hasAssertions();
             render(
                 <AppointmentForm
@@ -306,13 +302,15 @@ describe('AppointmentForm', () => {
                         )
                     }
                 />)
-            await ReactTestUtils.Simulate.change(startsAtField(1), {
+            //container.querySelectorAll('input[name="startsAt"]')[index]
+            //'value:' property needs to be passed as a String, convert: Number -> String
+             ReactTestUtils.Simulate.change(startsAtField(1), {
                 target: {
-                    value: availableTimeSlots[1].startsAt.toString(),
+                    value: String(availableTimeSlots[1].startsAt),
                     name: 'startAt'
                 }
             })
-            await ReactTestUtils.Simulate.submit(form('appointment'))
+             ReactTestUtils.Simulate.submit(form('appointment'))
         })
 
 

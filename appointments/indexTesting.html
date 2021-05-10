@@ -38,17 +38,17 @@
                 </tr>
                 <tr>
                     <th>header1</th>
-                    <tr>
-                        <td>yeye</td>
-                    </tr>
-                    <tr>
-                        <tr>
-                            <tr>
-                                <td id="ele">minnnNested</td>
-                            </tr>
-                        </tr>
-                    </tr>
-                    <td>table data1</td>
+                <tr>
+                    <td>yeye</td>
+                </tr>
+                <tr>
+                <tr>
+                <tr>
+                    <td id="ele">minnnNested</td>
+                </tr>
+                </tr>
+                </tr>
+                <td>table data1</td>
                 </tr>
                 <tr>
                     <th>header2</th>
@@ -58,10 +58,26 @@
                     <th>header3</th>
                     <td>table data3</td>
                 </tr>
-            </thead>
+                </thead>
         </table>
 
     </div>
+
+
+    <form id="myform">
+        <label for="cars">Choose a car:</label>
+        <select name="work" id="cars">
+            <option value="volvo" name="yoyo">Volvo</option>
+            <option value="saab">Saab</option>
+            <option value="opel">Opel</option>
+            <option value="audi">Audi</option>
+        </select>
+        <label for="fname">First name:</label><br>
+        <input type="text" id="fname" name="fname" value="John"><br>
+        <br><br>
+        <input type="submit" value="Submit">
+
+    </form>
 
 
 
@@ -75,13 +91,13 @@
         //use querySelectorAll() .length (how many <ol> in the document)
         console.log(value)
 
-        //access elements form
+        //access elements form (only works with <form>)
         const accessForm = document.querySelector('#my-form').elements;
         console.log(accessForm.service.childNodes)
         console.log(accessForm.service.childNodes[0].textContent)
         const arrayed = Array.from(accessForm.service.childNodes)
         console.log(arrayed)
-        const storedPrint = arrayed.map((el)=>{return el.textContent})
+        const storedPrint = arrayed.map((el) => { return el.textContent })
         console.log(storedPrint)
 
         //console.log(document.querySelector('#my-form').elements['service'])
@@ -92,6 +108,11 @@
         const accessTableId = document.querySelector('#tableId');
         console.log(accessTableId.querySelectorAll('tbody >* td[id="ele"]'))
 
+
+        //------------------
+        //new form
+        const doc = document.querySelectorAll('input[name="fname"]')[0]
+        console.log(doc)
 
     </script>
 </body>
