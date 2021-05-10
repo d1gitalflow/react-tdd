@@ -204,6 +204,7 @@ export const AppointmentForm = ({
                 checkedTimeSlot={appointment.startsAt}
                 handleChange={handleStartAtChange}
             />
+            <input type="submit" value="Add" />
         </form>)
 
 
