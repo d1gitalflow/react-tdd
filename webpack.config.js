@@ -2,7 +2,7 @@ const path = require("path");
 const webpack = require("webpack");
 //export the settings for webpack
 module.exports = {
-    mode: "development",
+    mode: "production",
     module: {
         rules: [{
             test: /\.(js|jsx)$/,
