@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "build":"webpack"
+    "build": "webpack"
   },
   "repository": {
     "type": "git",
@@ -27,6 +27,7 @@
     "babel-loader": "^8.2.2",
     "jest": "^26.6.3",
     "webpack": "^5.31.0",
+    "faker": "^5.5.2",
     "webpack-cli": "^4.6.0"
   },
   "dependencies": {
@@ -34,5 +35,4 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   }
-  
 }

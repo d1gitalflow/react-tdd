@@ -11,3 +11,10 @@ This repository will serve as a testing ground for all things react, mainly Reac
 
 
 ```
+
+## Running the project
+```
+Install: npm install 
+Test: npm run test
+Build: npm run build
+```
