@@ -5,6 +5,6 @@ import { sampleAppointments } from './sampleData.js';
 import {CustomerForm} from './CustomerForm.js'
 import {AppointmentForm} from './AppointmentForm.js'
 ReactDOM.render(
-    <AppointmentForm  />,
+    <AppointmentForm />,
     document.getElementById('root')
 );
