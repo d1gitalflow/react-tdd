@@ -61,16 +61,20 @@ describe('CustomerForm', () => {
 
   const itSubmitsExistingValue = (fieldName, value) =>
     it('saves existing value when submitted', async () => {
-      expect.hasAssertions();
+      let submitArg;//stored the value passed by onSubmit (component-side)
+      
       render(
         <CustomerForm
+          //unload as fieldName={value}, both fieldName & value to be defined.
           {...{ [fieldName]: value }}
-          onSubmit={props =>
-            expect(props[fieldName]).toEqual(value)
+          onSubmit={
+            (customer) => {return submitArg = customer}
           }
         />
-      );
+        );
       await ReactTestUtils.Simulate.submit(form('customer'));
+      //value received by 'submitArg' is object accessed by [fieldName] needs to match the value also passed to this test function
+      expect(submitArg[fieldName]).toEqual(value);
     });
 
   const itSubmitsNewValue = (fieldName, value) =>
