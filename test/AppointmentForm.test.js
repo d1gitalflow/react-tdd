@@ -209,7 +209,7 @@ describe('AppointmentForm', () => {
 
         it('renders a radio button for each time slot', () => {
 
-            
+
             render(
                 <AppointmentForm
                     availableTimeSlots={availableTimeSlots}
@@ -289,7 +289,7 @@ describe('AppointmentForm', () => {
         })
 
         //changes value, and checks it.
-        it('saves new value when submited',  () => {
+        it('saves new value when submited', () => {
             expect.hasAssertions();
             render(
                 <AppointmentForm
@@ -304,22 +304,94 @@ describe('AppointmentForm', () => {
                 />)
             //container.querySelectorAll('input[name="startsAt"]')[index]
             //'value:' property needs to be passed as a String, convert: Number -> String
-             ReactTestUtils.Simulate.change(startsAtField(1), {
+            ReactTestUtils.Simulate.change(startsAtField(1), {
                 target: {
                     value: String(availableTimeSlots[1].startsAt),
                     name: 'startAt'
                 }
             })
-             ReactTestUtils.Simulate.submit(form('appointment'))
+            ReactTestUtils.Simulate.submit(form('appointment'))
         })
 
+    });
+
+
+    describe('stylist field', () => {
+
+        const today = new Date();
+
+        it('lists only stylists that can perform the selected service', () => {
+            const selectableServices = ['1', '2'];
+            const selectableStylists = ['A', 'B', 'C'];
+            const serviceStylists = {
+                '1': ['A', 'B']
+            };
+
+            render(
+                <AppointmentForm
+                    selectableServices={selectableServices}
+                    selectableStylists={selectableStylists}
+                    serviceStylists={serviceStylists}
+                />
+            );
+
+            ReactTestUtils.Simulate.change(field('service'), {
+                target: { value: '1', name: 'service' }
+            });
+
+            const optionNodes = Array.from(field('stylist').childNodes);
+            const renderedServices = optionNodes.map(
+                node => node.textContent
+            );
+            expect(renderedServices).toEqual(
+                expect.arrayContaining(['A', 'B'])
+            );
+        });
+
+        it.skip('filters appointments by selected stylist', () => {
+            const availableTimeSlots = [
+                {
+                    startsAt: today.setHours(9, 0, 0, 0),
+                    stylists: ['A', 'B']
+                },
+                {
+                    startsAt: today.setHours(9, 30, 0, 0),
+                    stylists: ['A']
+                }
+            ];
+
+            render(
+                <AppointmentForm
+                    availableTimeSlots={availableTimeSlots}
+                    today={today}
+                />
+            );
+
+            ReactTestUtils.Simulate.change(field('stylist'), {
+                target: { value: 'B', name: 'stylist' }
+            });
+
+            const cells = timeSlotTable().querySelectorAll('td');
+            expect(
+                cells[0].querySelector('input[type="radio"]')
+            ).not.toBeNull();
+            expect(
+                cells[7].querySelector('input[type="radio"]')
+            ).toBeNull();
+        });
+
+
+
+
+    });
+});
 
 
 
 
 
 
-    })
 
 
-})
+
+

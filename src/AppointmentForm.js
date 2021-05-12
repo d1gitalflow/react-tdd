@@ -146,6 +146,9 @@ const RadioButtonIfAvailable = ({
 export const AppointmentForm = ({
     selectableServices,
     service,
+    selectableStylists,
+    stylist,
+    serviceStylists,
     onSubmit,
     salonOpensAt,
     salonClosesAt,
@@ -156,15 +159,16 @@ export const AppointmentForm = ({
 
     const [appointment, setAppointment] = useState({
         service,
-        startsAt
+        startsAt,
+        stylist
     })
 
-    const handleServiceChange = ({ target }) => {
+    const handleSelectBoxChange = ({ target }) => {
         setAppointment(
             (prevAppointment) => {
                 return {
                     ...prevAppointment,
-                    service: target.value
+                    [target.name]: target.value
                 }
             }
         )
@@ -181,6 +185,14 @@ export const AppointmentForm = ({
         })), []
     )
 
+    //useState object
+    const stylistsForService = appointment.service
+        ? serviceStylists[appointment.service]
+        : selectableStylists;
+    //useState object
+    const timeSlotsForStylist = appointment.stylist
+        ? availableTimeSlots.filter((slot) => { return slot.stylists.includes(appointment.stylist) }) : availableTimeSlots;
+
     return (
         <form id="appointment" onSubmit={() => { return onSubmit(appointment) }}>
             <label htmlFor="service" id="service">Salon service</label>
@@ -188,12 +200,28 @@ export const AppointmentForm = ({
                 id="service"
                 name="service"
                 value={service}
-                onChange={handleServiceChange}
+                onChange={handleSelectBoxChange}
                 readOnly>
                 <option />
                 {selectableServices.map(s => (
                     <option key={s}>{s}</option>
                 ))}
+                <select />
+                <label htmlFor="stylist">Stylist</label>
+                <select
+                    name="stylist"
+                    id="stylist"
+                    value={stylist}
+                    onChange={handleSelectBoxChange}
+                    readOnly>
+                    <option />
+                    {stylistsForService.map((s) => {
+                        return (
+                            <option key={s}>{s}</option>
+                        )
+                    })}
+                </select>
+
 
             </select>
             <TimeTableSlot
@@ -210,6 +238,8 @@ export const AppointmentForm = ({
 
 }
 
+//are being used by standard
+//availableTimeSlots is being passed from sampleData.js
 AppointmentForm.defaultProps = {
     availableTimeSlots: [],
     today: new Date(),
@@ -221,6 +251,16 @@ AppointmentForm.defaultProps = {
         'Cut & color',
         'Beard trim',
         'Cut & beard trim',
-        'Extensions'],
+        'Extensions'
+    ],
+    selectableStylists: ['Ashley', 'Jo', 'Pat', 'Sam'],
+    serviceStylists: {
+        Cut: ['Ashley', 'Jo', 'Pat', 'Sam'],
+        'Blow-dry': ['Ashley', 'Jo', 'Pat', 'Sam'],
+        'Cut & color': ['Ashley', 'Jo'],
+        'Beard trim': ['Pat', 'Sam'],
+        'Cut & beard trim': ['Pat', 'Sam'],
+        Extensions: ['Ashley', 'Pat']
+    }
 
 };
