@@ -15,6 +15,25 @@ describe('CustomerForm', () => {
   const labelFor = formElement =>
     container.querySelector(`label[for="${formElement}"]`);
 
+
+  /* const singleArgumentSpy = () => {
+    let receivedArgument;
+    return {
+      fn:(arg)=>{return receivedArgument = arg},
+      receivedArgument:() =>{return receivedArgument}
+    }
+  } */
+
+  const spy = () => {
+    let receivedArguments;
+    return {
+      fn: (...args) => (receivedArguments = args),
+      receivedArguments: () => receivedArguments,
+      receivedArgument: n => receivedArguments[n]
+    };
+  };
+
+
   it('renders a form', () => {
     render(<CustomerForm />);
     expect(form('customer')).not.toBeNull();
@@ -61,20 +80,22 @@ describe('CustomerForm', () => {
 
   const itSubmitsExistingValue = (fieldName, value) =>
     it('saves existing value when submitted', async () => {
-      let submitArg;//stored the value passed by onSubmit (component-side)
-      
+      //[DEPRECATED Spy] let submitArg;//store the value passed by onSubmit (component-side)
+
+      //returns a obj
+      const submitSpy = spy();
+
       render(
         <CustomerForm
           //unload as fieldName={value}, both fieldName & value to be defined.
           {...{ [fieldName]: value }}
-          onSubmit={
-            (customer) => {return submitArg = customer}
-          }
+          onSubmit={submitSpy.fn}
         />
-        );
+      );
       await ReactTestUtils.Simulate.submit(form('customer'));
-      //value received by 'submitArg' is object accessed by [fieldName] needs to match the value also passed to this test function
-      expect(submitArg[fieldName]).toEqual(value);
+      //access the stored value
+      expect(submitSpy.receivedArguments()).toBeDefined(); //.toBeDefined means: is not 'undefined', always return another value.
+      expect(submitSpy.receivedArgument(0)[fieldName]).toEqual(value)
     });
 
   const itSubmitsNewValue = (fieldName, value) =>
