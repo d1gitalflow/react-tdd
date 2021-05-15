@@ -61,6 +61,28 @@ describe('CustomerForm', () => {
     expect(submitButton).not.toBeNull();
   });
 
+  it('calls fetch with the right properties when submitting data', async () => {
+    const fetchSpy = spy();
+    render(
+      <CustomerForm fetch={fetchSpy.fn}  />
+    );
+    ReactTestUtils.Simulate.submit(form('customer'));
+
+    expect(fetchSpy).toHaveBeenCalled();
+    //first arg of fetch(arg,_)
+    expect(fetchSpy.receivedArgument(0)).toEqual('/customers');
+
+    //second arg of fetch
+    const fetchOpts = fetchSpy.receivedArgument(1);
+    expect(fetchOpts.method).toEqual('POST');
+    expect(fetchOpts.credentials).toEqual('same-origin');
+    expect(fetchOpts.headers).toEqual({
+      'Content-Type': 'application/json'
+    });
+
+
+  })
+
   const expectToBeInputFieldOfTypeText = formElement => {
     expect(formElement).not.toBeNull();
     expect(formElement.tagName).toEqual('INPUT');
@@ -97,39 +119,43 @@ describe('CustomerForm', () => {
       //[DEPRECATED Spy] let submitArg;//store the value passed by onSubmit (component-side)
 
       //returns a obj
-      const submitSpy = spy();
+      const fetchSpy = spy();
 
       render(
         <CustomerForm
           //unload as fieldName={value}, both fieldName & value to be defined.
           {...{ [fieldName]: value }}
-          onSubmit={submitSpy.fn}
+          fetch={fetchSpy.fn}
         />
       );
       await ReactTestUtils.Simulate.submit(form('customer'));
-      
-      expect(submitSpy).toHaveBeenCalled();
-      
-      //access the stored value
-      expect(submitSpy.receivedArguments()).toBeDefined(); //.toBeDefined means: is not 'undefined', always return another value.
-      expect(submitSpy.receivedArgument(0)[fieldName]).toEqual(value)
+
+
+      const fetchOpts = fetchSpy.receivedArgument(1);
+      expect(JSON.parse(fetchOpts.body)[fieldName]).toEqual(
+        value
+      );
     });
 
   const itSubmitsNewValue = (fieldName, value) =>
     it('saves new value when submitted', async () => {
-      expect.hasAssertions();
+      const fetchSpy = spy();
+
       render(
         <CustomerForm
           {...{ [fieldName]: 'existingValue' }}
-          onSubmit={props =>
-            expect(props[fieldName]).toEqual(value)
-          }
+          fetch={fetchSpy.fn}
         />
       );
       await ReactTestUtils.Simulate.change(field(fieldName), {
         target: { value, name: fieldName }
       });
       await ReactTestUtils.Simulate.submit(form('customer'));
+
+      const fetchOpts = fetchSpy.receivedArgument(1);
+      expect(JSON.parse(fetchOpts.body)[fieldName]).toEqual(
+        value
+      );
     });
 
   describe('first name field', () => {
