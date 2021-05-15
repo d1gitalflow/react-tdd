@@ -33,6 +33,20 @@ describe('CustomerForm', () => {
     };
   };
 
+  //add a jest matcher 'toHaveBeenCalled'
+  //its a Jest built in method, returns an obj with props 'pass' and 'message' as all jest matchers must return
+  expect.extend({
+    toHaveBeenCalled(received) {
+      if (received.receivedArguments() === undefined) {
+        return {
+          pass: false,
+          message: () => { return 'Spy was not called' }
+        }
+      }
+      return { pass: true, message: () => { return 'Spy was called' } }
+    }
+  });
+
 
   it('renders a form', () => {
     render(<CustomerForm />);
@@ -93,6 +107,9 @@ describe('CustomerForm', () => {
         />
       );
       await ReactTestUtils.Simulate.submit(form('customer'));
+      
+      expect(submitSpy).toHaveBeenCalled();
+      
       //access the stored value
       expect(submitSpy.receivedArguments()).toBeDefined(); //.toBeDefined means: is not 'undefined', always return another value.
       expect(submitSpy.receivedArgument(0)[fieldName]).toEqual(value)
