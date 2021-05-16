@@ -5,6 +5,8 @@ import {
   sampleAvailableTimeSlots,
   sampleStylists
 } from './sampleData';
+//for fetch to work in the browser, we need a polifyll
+import 'whatwg-fetch';
 
 ReactDOM.render(
   <AppointmentForm
