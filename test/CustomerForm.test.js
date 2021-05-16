@@ -6,9 +6,22 @@ import { CustomerForm } from '../src/CustomerForm';
 describe('CustomerForm', () => {
   let render, container;
 
+  const originalFetch = window.fetch;
+  let fetchSpy;
+
+
+  //runs before each unit test, so there is no permature initialization (ie: spy() )
   beforeEach(() => {
     ({ render, container } = createContainer());
+    fetchSpy = spy();
+    window.fetch = fetchSpy.fn;
   });
+
+  //after each unit test
+  //unset the mock, (undo) the overriden 'window.fetch' to the original value
+  afterEach(()=>{
+    window.fetch = originalFetch;
+  })
 
   const form = id => container.querySelector(`form[id="${id}"]`);
   const field = name => form('customer').elements[name];
@@ -47,6 +60,8 @@ describe('CustomerForm', () => {
     }
   });
 
+  
+
 
   it('renders a form', () => {
     render(<CustomerForm />);
@@ -62,9 +77,8 @@ describe('CustomerForm', () => {
   });
 
   it('calls fetch with the right properties when submitting data', async () => {
-    const fetchSpy = spy();
     render(
-      <CustomerForm fetch={fetchSpy.fn}  />
+      <CustomerForm />
     );
     ReactTestUtils.Simulate.submit(form('customer'));
 
@@ -116,16 +130,11 @@ describe('CustomerForm', () => {
 
   const itSubmitsExistingValue = (fieldName, value) =>
     it('saves existing value when submitted', async () => {
-      //[DEPRECATED Spy] let submitArg;//store the value passed by onSubmit (component-side)
-
-      //returns a obj
-      const fetchSpy = spy();
-
+      
       render(
         <CustomerForm
           //unload as fieldName={value}, both fieldName & value to be defined.
           {...{ [fieldName]: value }}
-          fetch={fetchSpy.fn}
         />
       );
       await ReactTestUtils.Simulate.submit(form('customer'));
@@ -139,12 +148,10 @@ describe('CustomerForm', () => {
 
   const itSubmitsNewValue = (fieldName, value) =>
     it('saves new value when submitted', async () => {
-      const fetchSpy = spy();
 
       render(
         <CustomerForm
-          {...{ [fieldName]: 'existingValue' }}
-          fetch={fetchSpy.fn}
+          {...{ [fieldName]: 'existingValue' }} 
         />
       );
       await ReactTestUtils.Simulate.change(field(fieldName), {
