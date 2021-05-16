@@ -19,7 +19,7 @@ describe('CustomerForm', () => {
 
   //after each unit test
   //unset the mock, (undo) the overriden 'window.fetch' to the original value
-  afterEach(()=>{
+  afterEach(() => {
     window.fetch = originalFetch;
   })
 
@@ -39,10 +39,16 @@ describe('CustomerForm', () => {
 
   const spy = () => {
     let receivedArguments;
+    let returnValue;
     return {
-      fn: (...args) => (receivedArguments = args),
+      fn: (...args) => {
+        receivedArguments = args;
+        return returnValue;
+      },
       receivedArguments: () => receivedArguments,
-      receivedArgument: n => receivedArguments[n]
+      receivedArgument: n => receivedArguments[n],
+      //set stub value
+      stubReturnValue: (value) => { return returnValue = value }
     };
   };
 
@@ -60,7 +66,7 @@ describe('CustomerForm', () => {
     }
   });
 
-  
+
 
 
   it('renders a form', () => {
@@ -130,7 +136,7 @@ describe('CustomerForm', () => {
 
   const itSubmitsExistingValue = (fieldName, value) =>
     it('saves existing value when submitted', async () => {
-      
+
       render(
         <CustomerForm
           //unload as fieldName={value}, both fieldName & value to be defined.
@@ -151,7 +157,7 @@ describe('CustomerForm', () => {
 
       render(
         <CustomerForm
-          {...{ [fieldName]: 'existingValue' }} 
+          {...{ [fieldName]: 'existingValue' }}
         />
       );
       await ReactTestUtils.Simulate.change(field(fieldName), {
