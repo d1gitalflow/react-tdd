@@ -136,17 +136,30 @@ describe('CustomerForm', () => {
     expect(saveSpy.receivedArgument(0)).toEqual(customer);
   })
 
-  it('prevents the default action when submitting the form',async ()=>{
+  it('prevents the default action when submitting the form', async () => {
     const preventDefaultSpy = spy();
 
     render(<CustomerForm />);
-    await act(async ()=>{
-      ReactTestUtils.Simulate.submit(form('customer'),{
+    await act(async () => {
+      ReactTestUtils.Simulate.submit(form('customer'), {
         preventDefault: preventDefaultSpy.fn
       })
     })
 
     expect(preventDefaultSpy).toHaveBeenCalled();
+  })
+
+  it('renders error message when fetch call fails', async () => {
+    fetchSpy.stubReturnValue(Promise.resolve({ ok: false }));
+
+    render(<CustomerForm />);
+    await act(async () => {
+      ReactTestUtils.Simulate.submit(form('customer'));
+    });
+
+    const errorElement = container.querySelector('.error');
+    expect(errorElement).not.toBeNull();
+    expect(errorElement.textContent).toMatch('error occurred');
   })
 
   const expectToBeInputFieldOfTypeText = formElement => {
