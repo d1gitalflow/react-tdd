@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactTestUtils from 'react-dom/test-utils';
+import ReactTestUtils, { act } from 'react-dom/test-utils';
 import { createContainer } from './domManipulators';
 import { CustomerForm } from '../src/CustomerForm';
 
@@ -15,6 +15,8 @@ describe('CustomerForm', () => {
     ({ render, container } = createContainer());
     fetchSpy = spy();
     window.fetch = fetchSpy.fn;
+    //stub value is: resolved promise with a empty object '{}'
+    fetchSpy.stubReturnValue(fetchResponseOk({}));
   });
 
   //after each unit test
@@ -51,6 +53,16 @@ describe('CustomerForm', () => {
       stubReturnValue: (value) => { return returnValue = value }
     };
   };
+
+  const fetchResponseOk = body =>
+    //mimic a fetch response
+    Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve(body)
+    })
+  const fetchResponseError = () =>
+    //mimic a ok:false response
+    Promise.resolve({ ok: false });
 
   //add a jest matcher 'toHaveBeenCalled'
   //its a Jest built in method, returns an obj with props 'pass' and 'message' as all jest matchers must return
@@ -99,8 +111,42 @@ describe('CustomerForm', () => {
     expect(fetchOpts.headers).toEqual({
       'Content-Type': 'application/json'
     });
+  })
 
+  it('does not notify onSave if the POST request returns an error',
+    async () => {
+      fetchSpy.stubReturnValue(fetchResponseError());
+      const saveSpy = spy();
+      render(<CustomerForm onSave={saveSpy.fn} />);
+      await act(async () => {
+        ReactTestUtils.Simulate.submit(form('customer'));
+      });
+      expect(saveSpy).not.toHaveBeenCalled();
+    });
 
+  it('notifies onSave when form is submitted', async () => {
+    const customer = { id: 123 };
+    fetchSpy.stubReturnValue(fetchResponseOk(customer));
+    const saveSpy = spy();
+
+    render(<CustomerForm onSave={saveSpy.fn} />);
+    await act(async () => { ReactTestUtils.Simulate.submit(form('customer')) });
+
+    expect(saveSpy).toHaveBeenCalled();
+    expect(saveSpy.receivedArgument(0)).toEqual(customer);
+  })
+
+  it('prevents the default action when submitting the form',async ()=>{
+    const preventDefaultSpy = spy();
+
+    render(<CustomerForm />);
+    await act(async ()=>{
+      ReactTestUtils.Simulate.submit(form('customer'),{
+        preventDefault: preventDefaultSpy.fn
+      })
+    })
+
+    expect(preventDefaultSpy).toHaveBeenCalled();
   })
 
   const expectToBeInputFieldOfTypeText = formElement => {
