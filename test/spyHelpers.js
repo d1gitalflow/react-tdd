@@ -1,11 +1,11 @@
 export const fetchResponseOk = body =>
-    //mimic a fetch response
-    Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve(body)
-    })
-export const fetchResponseError = () =>
-    //mimic a ok:false response
-    Promise.resolve({ ok: false });
+  Promise.resolve({
+    ok: true,
+    json: () => Promise.resolve(body)
+  });
 
-export const fetchRequestBody = (fetchSpy) => JSON.parse(fetchSpy.mock.calls[0][1].body)     
+export const fetchResponseError = () =>
+  Promise.resolve({ ok: false });
+
+export const requestBodyOf = fetchSpy =>
+  JSON.parse(fetchSpy.mock.calls[0][1].body);

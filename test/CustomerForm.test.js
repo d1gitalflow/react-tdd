@@ -1,117 +1,42 @@
 import React from 'react';
-import ReactTestUtils, { act } from 'react-dom/test-utils';
+import 'whatwg-fetch';
+import {
+  fetchResponseOk,
+  fetchResponseError,
+  requestBodyOf
+} from './spyHelpers';
 import { createContainer, withEvent } from './domManipulators';
 import { CustomerForm } from '../src/CustomerForm';
 
-import { fetchResponseOk, fetchResponseError, fetchRequestBody } from './spyHelpers';
-
-import 'whatwg-fetch';
-
-
-/* RUNDOWN (Spy + Stub) WITH JEST:
-
-To create a new spy call jest.fn() -> const fetchSpy = jest.fn();
-
-To override an existing property, call -> jest.spyOn(obj,property)
-
-To set a return value, call spy.mockReturnValue(); can also pass this into jest.fn
-
-Can set multiple return values by chaining calls to spy.mockReturnValueOnce();
-
-To check that my spy was called use expect(spy).toHaveBeenCalled();
-
-To check the arguments passed to my spy can use: expect(spy).ToHaveBeenCalledWith(arguments); Or, if my spy is called multiple times and want to check the last time it was called, i can use
-expect(spy).toHaveLastBeenCalledWith(args)
-
-Calling spy.mockReset() removes all the mocked implementations, return values, and existing call history from a spy.
-
-Calling spy.mockRestore() will remove the mock and give you back the original implementation
-
-When using toHaveBeenCalledWith i can pass an argument value to expect.anything() to say that i dont care what the value of that argument is
-
-I can use expect.objectMatching(object) to check that an argument has all the properties of the object i pass in, rather than being extactly equal to the object
-
-When my spy is called multiple times, i can check the parameters passed to specific calls by using spy.mock.calls[n] where n is the call number (for example) calls[0] will return the arguments for the first time it was called
-
-If i need to perform complex matching on a specific argument i can use spy.mock.calls[0][n] where n is the argument number.
-
-I can stub out and spy on entire modules using the jest.mock() function */
-
-
-
-
-
 describe('CustomerForm', () => {
-  let render, container, form, field, labelFor, element, elements, change, submit;
-  let fetchSpy;
-
-
-
-  const requestBodyOf = fetchRequestBody;
+  let render,
+    container,
+    form,
+    field,
+    labelFor,
+    element,
+    change,
+    submit;
 
   beforeEach(() => {
-    ({ render, container, form, field, labelFor, element, elements, change, submit } = createContainer());
-
-    jest   //access window.fetch for spy
+    ({
+      render,
+      container,
+      form,
+      field,
+      labelFor,
+      element,
+      change,
+      submit
+    } = createContainer());
+    jest
       .spyOn(window, 'fetch')
-      //pass stub value
       .mockReturnValue(fetchResponseOk({}));
-
   });
-
 
   afterEach(() => {
     window.fetch.mockRestore();
-  })
-
-
-
-
-  /* const singleArgumentSpy = () => {
-    let receivedArgument;
-    return {
-      fn:(arg)=>{return receivedArgument = arg},
-      receivedArgument:() =>{return receivedArgument}
-    }
-  } */
-
-
-  /*   const spy = () => {
-      let receivedArguments;
-      let returnValue;
-      return {
-        fn: (...args) => {
-          receivedArguments = args;
-          return returnValue;
-        },
-        receivedArguments: () => receivedArguments,
-        receivedArgument: n => receivedArguments[n],
-        //set stub value
-        stubReturnValue: (value) => { return returnValue = value }
-      };
-    }; */
-
-
-
-
-
-
-  /*   //add a jest matcher 'toHaveBeenCalled'
-    //its a Jest built in method, returns an obj with props 'pass' and 'message' as all jest matchers must return
-    expect.extend({
-      toHaveBeenCalled(received) {
-        if (received.receivedArguments() === undefined) {
-          return {
-            pass: false,
-            message: () => { return 'Spy was not called' }
-          }
-        }
-        return { pass: true, message: () => { return 'Spy was called' } }
-      }
-    }); */
-
-
-
+  });
 
   it('renders a form', () => {
     render(<CustomerForm />);
@@ -120,30 +45,14 @@ describe('CustomerForm', () => {
 
   it('has a submit button', () => {
     render(<CustomerForm />);
-    const submitButton = element(
-      'input[type="submit"]'
-    );
+    const submitButton = element('input[type="submit"]');
     expect(submitButton).not.toBeNull();
   });
 
   it('calls fetch with the right properties when submitting data', async () => {
-    render(
-      <CustomerForm />
-    );
+    render(<CustomerForm />);
+
     await submit(form('customer'));
-
-    /* expect(fetchSpy).toHaveBeenCalled();
-    //first arg of fetch(arg,_)
-    expect(fetchSpy.receivedArgument(0)).toEqual('/customers');
-
-    //second arg of fetch
-    const fetchOpts = fetchSpy.receivedArgument(1);
-    expect(fetchOpts.method).toEqual('POST');
-    expect(fetchOpts.credentials).toEqual('same-origin');
-    expect(fetchOpts.headers).toEqual({
-      'Content-Type': 'application/json'
-    }); */
-
     expect(window.fetch).toHaveBeenCalledWith(
       '/customers',
       expect.objectContaining({
@@ -151,20 +60,8 @@ describe('CustomerForm', () => {
         credentials: 'same-origin',
         headers: { 'Content-Type': 'application/json' }
       })
-    )
-  })
-
-  it('does not notify onSave if the POST request returns an error',
-    async () => {
-      window.fetch.mockReturnValue(fetchResponseError());
-      const saveSpy = jest.fn();
-      render(<CustomerForm onSave={saveSpy} />);
-      //const simulateEventAndWait = eventName => async (element,eventData) => await act(async () =>ReactTestUtils.Simulate[eventName](element, eventData));
-      //submit:simulateEventAndWait('submit')
-      submit(form('customer'));
-
-      expect(saveSpy).not.toHaveBeenCalled();
-    });
+    );
+  });
 
   it('notifies onSave when form is submitted', async () => {
     const customer = { id: 123 };
@@ -172,36 +69,54 @@ describe('CustomerForm', () => {
     const saveSpy = jest.fn();
 
     render(<CustomerForm onSave={saveSpy} />);
-    //TODO: (needed a missing await)
-     await submit(form('customer'))
+    await submit(form('customer'));
 
-    /* expect(saveSpy).toHaveBeenCalled();
-    expect(saveSpy.receivedArgument(0)).toEqual(customer); */
     expect(saveSpy).toHaveBeenCalledWith(customer);
-  })
+  });
+
+  it('does not notify onSave if the POST request returns an error', async () => {
+    window.fetch.mockReturnValue(fetchResponseError());
+    const saveSpy = jest.fn();
+
+    render(<CustomerForm onSave={saveSpy} />);
+    await submit(form('customer'));
+
+    expect(saveSpy).not.toHaveBeenCalled();
+  });
 
   it('prevents the default action when submitting the form', async () => {
     const preventDefaultSpy = jest.fn();
 
     render(<CustomerForm />);
-
-    submit(form('customer'), { preventDefault: preventDefaultSpy })
-
+    await submit(form('customer'), {
+      preventDefault: preventDefaultSpy
+    });
 
     expect(preventDefaultSpy).toHaveBeenCalled();
-  })
+  });
 
   it('renders error message when fetch call fails', async () => {
-    window.fetch.mockReturnValue(Promise.resolve({ ok: false }));
+    window.fetch.mockReturnValue(fetchResponseError());
 
     render(<CustomerForm />);
     await submit(form('customer'));
-    
 
-    const errorElement = element('.error');
-    expect(errorElement).not.toBeNull();
-    expect(errorElement.textContent).toMatch('error occurred');
-  })
+    expect(element('.error')).not.toBeNull();
+    expect(element('.error').textContent).toMatch(
+      'error occurred'
+    );
+  });
+
+  it('clears error message when fetch call succeeds', async () => {
+    window.fetch.mockReturnValueOnce(fetchResponseError());
+    window.fetch.mockReturnValue(fetchResponseOk());
+
+    render(<CustomerForm />);
+    await submit(form('customer'));
+    await submit(form('customer'));
+
+    expect(element('.error')).toBeNull();
+  });
 
   const expectToBeInputFieldOfTypeText = formElement => {
     expect(formElement).not.toBeNull();
@@ -236,36 +151,29 @@ describe('CustomerForm', () => {
 
   const itSubmitsExistingValue = (fieldName, value) =>
     it('saves existing value when submitted', async () => {
+      render(<CustomerForm {...{ [fieldName]: value }} />);
 
-      render(
-        <CustomerForm
-          //unload as fieldName={value}, both fieldName & value to be defined.
-          {...{ [fieldName]: value }}
-        />
-      );
-      submit(form('customer'));
-
+      await submit(form('customer'));
 
       expect(requestBodyOf(window.fetch)).toMatchObject({
         [fieldName]: value
-      })
+      });
     });
 
   const itSubmitsNewValue = (fieldName, value) =>
     it('saves new value when submitted', async () => {
-
       render(
-        <CustomerForm
-          {...{ [fieldName]: 'existingValue' }}
-        />
+        <CustomerForm {...{ [fieldName]: 'existingValue' }} />
       );
-
-      change(field('customer',fieldName),withEvent(fieldName,value))
-      submit(form('customer'));
+      change(
+        field('customer', fieldName),
+        withEvent(fieldName, value)
+      );
+      await submit(form('customer'));
 
       expect(requestBodyOf(window.fetch)).toMatchObject({
         [fieldName]: value
-      })
+      });
     });
 
   describe('first name field', () => {
