@@ -42,14 +42,14 @@ I can stub out and spy on entire modules using the jest.mock() function */
 
 
 describe('CustomerForm', () => {
-  let render, container, form, field, labelFor, element;
+  let render, container, form, field, labelFor, element, elements;
 
 
 
   const requestBodyOf = fetchRequestBody;
 
   beforeEach(() => {
-    ({ render, container, form, field, labelFor, element } = createContainer());
+    ({ render, container, form, field, labelFor, element, elements } = createContainer());
 
     jest   //access window.fetch for spy
       .spyOn(window, 'fetch')

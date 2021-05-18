@@ -7,6 +7,7 @@ export const createContainer = () => {
   const field = (formId, name) => form(formId).elements[name];
   const labelFor = formElement => container.querySelector(`label[for="${formElement}"]`);
   const element = selector => container.querySelector(selector);
+  const elements = selector =>Array.from(container.querySelectorAll(selector));
 
   return {
     render: component => ReactDOM.render(component, container),
@@ -14,7 +15,8 @@ export const createContainer = () => {
     form,
     field,
     labelFor,
-    element
+    element,
+    elements
   };
 };
 
