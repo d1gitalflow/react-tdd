@@ -3,6 +3,8 @@ import ReactTestUtils, { act } from 'react-dom/test-utils';
 import { createContainer } from './domManipulators';
 import { CustomerForm } from '../src/CustomerForm';
 
+import { fetchResponseOk, fetchResponseError, fetchRequestBody } from './spyHelpers'
+
 
 /* RUNDOWN (Spy + Stub) WITH JEST:
 
@@ -43,7 +45,9 @@ describe('CustomerForm', () => {
   const originalFetch = window.fetch;
   let fetchSpy;
 
-  
+  const requestBodyOf = fetchRequestBody;
+
+
 
 
 
@@ -51,10 +55,10 @@ describe('CustomerForm', () => {
   //runs before each unit test, so there is no permature initialization (ie: spy() )
   beforeEach(() => {
     ({ render, container } = createContainer());
-                          //pass stub value
-    fetchSpy = jest.fn(()=> fetchResponseOk({}));
+    //pass stub value
+    fetchSpy = jest.fn(() => fetchResponseOk({}));
     window.fetch = fetchSpy;
-    
+
   });
 
   //after each unit test
@@ -78,48 +82,39 @@ describe('CustomerForm', () => {
   } */
 
 
-/*   const spy = () => {
-    let receivedArguments;
-    let returnValue;
-    return {
-      fn: (...args) => {
-        receivedArguments = args;
-        return returnValue;
-      },
-      receivedArguments: () => receivedArguments,
-      receivedArgument: n => receivedArguments[n],
-      //set stub value
-      stubReturnValue: (value) => { return returnValue = value }
-    };
-  }; */
-
-  const fetchResponseOk = body =>
-    //mimic a fetch response
-    Promise.resolve({
-      ok: true,
-      json: () => Promise.resolve(body)
-    })
-  const fetchResponseError = () =>
-    //mimic a ok:false response
-    Promise.resolve({ ok: false });
+  /*   const spy = () => {
+      let receivedArguments;
+      let returnValue;
+      return {
+        fn: (...args) => {
+          receivedArguments = args;
+          return returnValue;
+        },
+        receivedArguments: () => receivedArguments,
+        receivedArgument: n => receivedArguments[n],
+        //set stub value
+        stubReturnValue: (value) => { return returnValue = value }
+      };
+    }; */
 
 
-  const fetchRequestBody = () =>
-    JSON.parse(fetchSpy.mock.calls[0][1].body)  
 
-/*   //add a jest matcher 'toHaveBeenCalled'
-  //its a Jest built in method, returns an obj with props 'pass' and 'message' as all jest matchers must return
-  expect.extend({
-    toHaveBeenCalled(received) {
-      if (received.receivedArguments() === undefined) {
-        return {
-          pass: false,
-          message: () => { return 'Spy was not called' }
+
+
+
+  /*   //add a jest matcher 'toHaveBeenCalled'
+    //its a Jest built in method, returns an obj with props 'pass' and 'message' as all jest matchers must return
+    expect.extend({
+      toHaveBeenCalled(received) {
+        if (received.receivedArguments() === undefined) {
+          return {
+            pass: false,
+            message: () => { return 'Spy was not called' }
+          }
         }
+        return { pass: true, message: () => { return 'Spy was called' } }
       }
-      return { pass: true, message: () => { return 'Spy was called' } }
-    }
-  }); */
+    }); */
 
 
 
@@ -158,9 +153,9 @@ describe('CustomerForm', () => {
     expect(fetchSpy).toHaveBeenCalledWith(
       '/customers',
       expect.objectContaining({
-        method:'POST',
-        credentials:'same-origin',
-        headers: { 'Content-Type':'application/json'}
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' }
       })
     )
   })
@@ -258,8 +253,8 @@ describe('CustomerForm', () => {
       await ReactTestUtils.Simulate.submit(form('customer'));
 
 
-      expect(fetchRequestBody()).toMatchObject({
-        [fieldName]:value
+      expect(requestBodyOf(fetchSpy)).toMatchObject({
+        [fieldName]: value
       })
     });
 
@@ -276,8 +271,8 @@ describe('CustomerForm', () => {
       });
       await ReactTestUtils.Simulate.submit(form('customer'));
 
-      expect(fetchRequestBody()).toMatchObject({
-        [fieldName]:value
+      expect(requestBodyOf(fetchSpy)).toMatchObject({
+        [fieldName]: value
       })
     });
 
