@@ -3,7 +3,9 @@ import ReactTestUtils, { act } from 'react-dom/test-utils';
 import { createContainer } from './domManipulators';
 import { CustomerForm } from '../src/CustomerForm';
 
-import { fetchResponseOk, fetchResponseError, fetchRequestBody } from './spyHelpers'
+import { fetchResponseOk, fetchResponseError, fetchRequestBody } from './spyHelpers';
+
+import 'whatwg-fetch';
 
 
 /* RUNDOWN (Spy + Stub) WITH JEST:
@@ -42,8 +44,7 @@ I can stub out and spy on entire modules using the jest.mock() function */
 describe('CustomerForm', () => {
   let render, container;
 
-  const originalFetch = window.fetch;
-  let fetchSpy;
+  
 
   const requestBodyOf = fetchRequestBody;
 
@@ -52,19 +53,20 @@ describe('CustomerForm', () => {
 
 
 
-  //runs before each unit test, so there is no permature initialization (ie: spy() )
+
   beforeEach(() => {
     ({ render, container } = createContainer());
-    //pass stub value
-    fetchSpy = jest.fn(() => fetchResponseOk({}));
-    window.fetch = fetchSpy;
+    
+    jest   //access window.fetch for spy
+      .spyOn(window,'fetch')
+      //pass stub value
+      .mockReturnValue(fetchResponseOk({}));
 
   });
 
-  //after each unit test
-  //unset the mock, (undo) the overriden 'window.fetch' to the original value
+
   afterEach(() => {
-    window.fetch = originalFetch;
+    window.fetch.mockRestore();
   })
 
   const form = id => container.querySelector(`form[id="${id}"]`);
@@ -150,7 +152,7 @@ describe('CustomerForm', () => {
       'Content-Type': 'application/json'
     }); */
 
-    expect(fetchSpy).toHaveBeenCalledWith(
+    expect(window.fetch).toHaveBeenCalledWith(
       '/customers',
       expect.objectContaining({
         method: 'POST',
@@ -162,7 +164,7 @@ describe('CustomerForm', () => {
 
   it('does not notify onSave if the POST request returns an error',
     async () => {
-      fetchSpy.mockReturnValue(fetchResponseError());
+      window.fetch.mockReturnValue(fetchResponseError());
       const saveSpy = jest.fn();
       render(<CustomerForm onSave={saveSpy} />);
       await act(async () => {
@@ -173,7 +175,7 @@ describe('CustomerForm', () => {
 
   it('notifies onSave when form is submitted', async () => {
     const customer = { id: 123 };
-    fetchSpy.mockReturnValue(fetchResponseOk(customer));
+    window.fetch.mockReturnValue(fetchResponseOk(customer));
     const saveSpy = jest.fn();
 
     render(<CustomerForm onSave={saveSpy} />);
@@ -198,7 +200,7 @@ describe('CustomerForm', () => {
   })
 
   it('renders error message when fetch call fails', async () => {
-    fetchSpy.mockReturnValue(Promise.resolve({ ok: false }));
+    window.fetch.mockReturnValue(Promise.resolve({ ok: false }));
 
     render(<CustomerForm />);
     await act(async () => {
@@ -253,7 +255,7 @@ describe('CustomerForm', () => {
       await ReactTestUtils.Simulate.submit(form('customer'));
 
 
-      expect(requestBodyOf(fetchSpy)).toMatchObject({
+      expect(requestBodyOf(window.fetch)).toMatchObject({
         [fieldName]: value
       })
     });
@@ -271,7 +273,7 @@ describe('CustomerForm', () => {
       });
       await ReactTestUtils.Simulate.submit(form('customer'));
 
-      expect(requestBodyOf(fetchSpy)).toMatchObject({
+      expect(requestBodyOf(window.fetch)).toMatchObject({
         [fieldName]: value
       })
     });
