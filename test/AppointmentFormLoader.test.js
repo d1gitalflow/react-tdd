@@ -6,22 +6,23 @@ import {
     AppointmentFormLoader
 } from '../src/AppointmentFormLoader';
 
-              //is an object
+//is an object
 import * as AppointmentFormExports from '../src/AppointmentForm';
 
 
 
 describe('AppointmentFormLoader', () => {
-    let render, container;
+    let renderAndWait, container;
     const today = new Date();
     const availableTimeSlots = [
 
         { startsAt: today.setHours(9, 0, 0, 0) }
     ];
     beforeEach(() => {
-        ({ render, container } = createContainer());
-        jest
+        ({ renderAndWait, container } = createContainer());
+        jest   //our spy() (stores state response)
             .spyOn(window, 'fetch')
+            //our stub (sets a value and returns it, to test calls)
             .mockReturnValue(fetchResponseOk(availableTimeSlots));
         jest
             .spyOn(AppointmentFormExports, 'AppointmentForm')
@@ -32,8 +33,8 @@ describe('AppointmentFormLoader', () => {
         AppointmentFormExports.AppointmentForm.mockRestore();
     });
 
-    it('fetches data when component is mounted', () => {
-        render(<AppointmentFormLoader />);
+    it('fetches data when component is mounted', async () => {
+        await renderAndWait(<AppointmentFormLoader />);
         expect(window.fetch).toHaveBeenCalledWith(
             '/availableTimeSlots',
             expect.objectContaining({
@@ -44,8 +45,8 @@ describe('AppointmentFormLoader', () => {
         );
     })
 
-    it('initially passes no data to AppointmentForm', () => {
-        render(<AppointmentFormLoader />);
+    it('initially passes no data to AppointmentForm', async () => {
+        await renderAndWait(<AppointmentFormLoader />);
         expect(
             AppointmentFormExports.AppointmentForm
         ).toHaveBeenCalledWith(
@@ -53,4 +54,16 @@ describe('AppointmentFormLoader', () => {
             expect.anything()
         );
     });
+
+    it('displays times slots that are fetched on mount', async () => {
+        await renderAndWait(<AppointmentFormLoader />);
+
+        expect(AppointmentFormExports.AppointmentForm).toHaveBeenLastCalledWith(
+            {
+                availableTimeSlots
+            },
+            expect.anything()
+        );
+
+    })
 });

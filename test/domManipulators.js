@@ -33,7 +33,7 @@ export const createContainer = () => {
     state setters until after all effects have executed. We are using the first
     behavior here.*/
     render: component =>
-      act(() => {ReactDOM.render(component, container);}),
+      act(() => { ReactDOM.render(component, container); }),
     container,
     form,
     field,
@@ -43,7 +43,9 @@ export const createContainer = () => {
     children,
     click: simulateEvent('click'),
     change: simulateEvent('change'),
-    submit: simulateEventAndWait('submit')
+    submit: simulateEventAndWait('submit'),
+    renderAndWait: async component =>
+      await act(async () => ReactDOM.render(component, container)),
   };
 };
 
