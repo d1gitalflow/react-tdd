@@ -27,7 +27,13 @@ export const createContainer = () => {
   const children = element => Array.from(element.childNodes);
 
   return {
-    render: component => ReactDOM.render(component, container),
+
+    /* The synchronous form of act does two things: first, it calls all useEffect
+    hooks after it has rendered the provided component. Second, it defers any
+    state setters until after all effects have executed. We are using the first
+    behavior here.*/
+    render: component =>
+      act(() => {ReactDOM.render(component, container);}),
     container,
     form,
     field,

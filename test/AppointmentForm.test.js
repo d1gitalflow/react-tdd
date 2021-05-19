@@ -8,6 +8,8 @@ import {
 import { createContainer, withEvent } from './domManipulators';
 import { AppointmentForm } from '../src/AppointmentForm';
 
+
+
 describe('AppointmentForm', () => {
   let render,
     container,
@@ -40,6 +42,7 @@ describe('AppointmentForm', () => {
 
   afterEach(() => {
     window.fetch.mockRestore();
+    
   });
 
   const findOption = (dropdownNode, textContent) => {
@@ -119,6 +122,9 @@ describe('AppointmentForm', () => {
       'error occurred'
     );
   });
+
+  
+
 
   it('clears error message when fetch call succeeds', async () => {
     window.fetch.mockReturnValueOnce(fetchResponseError());
