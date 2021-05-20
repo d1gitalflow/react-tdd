@@ -11,6 +11,7 @@ import { AppointmentForm } from '../src/AppointmentForm';
 
 
 describe('AppointmentForm', () => {
+  const customer = { id: 123 };
   let render,
     container,
     form,
@@ -42,7 +43,7 @@ describe('AppointmentForm', () => {
 
   afterEach(() => {
     window.fetch.mockRestore();
-    
+
   });
 
   const findOption = (dropdownNode, textContent) => {
@@ -123,7 +124,16 @@ describe('AppointmentForm', () => {
     );
   });
 
-  
+  it('passes the customer id to fetch when submitting', async () => {
+    const customer = { id: 123 };
+    render(<AppointmentForm customer={customer} />);
+    await submit(form('appointment'));
+    expect(requestBodyOf(window.fetch)).toMatchObject({
+      customer: customer.id
+    });
+  });
+
+
 
 
   it('clears error message when fetch call succeeds', async () => {
@@ -194,6 +204,7 @@ describe('AppointmentForm', () => {
   };
 
   const itSubmitsExistingValue = (fieldName, props) => {
+
     it('saves existing value when submitted', async () => {
       render(
         <AppointmentForm
@@ -402,6 +413,7 @@ describe('AppointmentForm', () => {
     it('saves existing value when submitted', async () => {
       render(
         <AppointmentForm
+          customer={customer}
           availableTimeSlots={availableTimeSlots}
           today={today}
           startsAt={availableTimeSlots[0].startsAt}
@@ -417,7 +429,8 @@ describe('AppointmentForm', () => {
     it('saves new value when submitted', async () => {
       render(
         <AppointmentForm
-          availableTimeSlots={availableTimeSlots}
+        customer={customer}  
+        availableTimeSlots={availableTimeSlots}
           today={today}
           startsAt={availableTimeSlots[0].startsAt}
         />
