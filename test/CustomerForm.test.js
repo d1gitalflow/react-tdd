@@ -107,7 +107,6 @@ describe('CustomerForm', () => {
     );
   });
 
-  
   it('clears error message when fetch call succeeds', async () => {
     window.fetch.mockReturnValueOnce(fetchResponseError());
     window.fetch.mockReturnValue(fetchResponseOk());
