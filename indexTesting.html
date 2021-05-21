@@ -79,6 +79,11 @@
 
     </form>
 
+    <div id="meme">
+        <p>A</p>
+        <p>B</p>
+    </div>
+
 
 
 
@@ -113,6 +118,75 @@
         //new form
         const doc = document.querySelectorAll('input[name="fname"]')[0]
         console.log(doc)
+
+        //in direct react console.log()
+        
+     /*   
+            <div>
+                <p>A</p>
+                <p>B</p>
+            </div>
+
+     {
+        '$$typeof': Symbol(react.element),
+        type: 'div',
+        key: null,
+        ref: null,
+        props: { children: [ [Object], [Object], ' ' ] },   //the .children obj has always a array with children values + empty array in the end (' ') 
+        _owner: null,
+        _store: {}
+      } 
+
+
+      //INSIDE children object: [Object,Object,' ']:
+
+      [
+        {
+          '$$typeof': Symbol(react.element),
+          type: 'p',
+          key: null,
+          ref: null,
+          props: { children: 'A' },
+          _owner: null,
+          _store: {}
+        },
+        {
+          '$$typeof': Symbol(react.element),
+          type: 'p',
+          key: null,
+          ref: null,
+          props: { children: 'B' },
+          _owner: null,
+          _store: {}
+        }
+      ]
+
+      is the same as: [Object,Object]
+      is the same as: [<p>A</p>,<p>B</p>]
+      
+      props.children can be either undefined(empty object{}), an array, an object, or astring.
+      
+
+
+      console.log(<div>text</div>) (remember .children gets only element nodes)
+      {
+        '$$typeof': Symbol(react.element),
+        type: 'div',
+        key: null,
+        ref: null,
+        props: { children: 'text' },
+        _owner: null,
+        _store: {}
+      }
+      
+      
+      
+      
+      
+      */
+
+        const query = document.querySelector('#meme');
+        console.log(query.children)
 
     </script>
 </body>
