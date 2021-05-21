@@ -1,5 +1,6 @@
-import React from 'react'
-import { childrenOf } from './shallowHelpers'
+import React from 'react';
+import { createShallowRenderer, childrenOf, type } from './shallowHelpers';
+
 describe('childrenOf', () => {
     it('return no children', () => {
         expect(childrenOf(<div />)).toEqual([]);
@@ -32,4 +33,51 @@ describe('childrenOf', () => {
             )
         ).toEqual([<p>A</p>]);
     });
+
+
 })
+
+const TestComponent = ({ children }) => {
+    return <React.Fragment>{children}</React.Fragment>
+}
+
+describe('child', () => {
+    let render, child;
+
+    beforeEach(() => {
+        ({ render, child } = createShallowRenderer());
+    });
+
+    it('returns undefined if the child does not exist', () => {
+        render(<TestComponent />);
+        //expects 'undefined'
+        expect(child(0)).not.toBeDefined();
+    })
+
+    it('returns child of rendered element', () => {
+        render(
+            <TestComponent>
+                <p>A</p>
+                <p>B</p>
+            </TestComponent>
+        );
+        expect(child(1)).toEqual(<p>B</p>);
+    });
+})
+
+
+describe('elementMatching', () => {
+    let render, elementMatching;
+    beforeEach(() => {
+        ({ render, elementMatching } = createShallowRenderer());
+    });
+    it('finds first direct child', () => {
+        render(
+            <TestComponent>
+                <p>A</p>
+                <p>B</p>
+            </TestComponent>
+        );
+        expect(elementMatching(type('p'))).toEqual(<p>A</p>);
+    });
+});
