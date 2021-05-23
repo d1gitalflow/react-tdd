@@ -55,19 +55,23 @@ describe('child', () => {
     })
 
     it('returns child of rendered element', () => {
+        
+        
         render(
             <TestComponent>
                 <p>A</p>
                 <p>B</p>
             </TestComponent>
         );
+
+        
         expect(child(1)).toEqual(<p>B</p>);
     });
 })
 
 
 describe('elementMatching', () => {
-    let render, elementMatching;
+    let render,elementMatching;
     beforeEach(() => {
         ({ render, elementMatching } = createShallowRenderer());
     });
