@@ -10,29 +10,22 @@ AppointmentsDayViewLoader
 
 
 import React, { useState, useCallback } from 'react';
-import { CustomerForm } from './CustomerForm';
-import ReactDOM from 'react-dom';
+import { AppointmentFormLoader } from './AppointmentFormLoader';
 import { AppointmentsDayViewLoader } from './AppointmentsDayViewLoader';
-import {AppointmentFormLoader} from './AppointmentFormLoader'
-
-
+import { CustomerForm } from './CustomerForm';
 
 export const App = () => {
-    
-    const today = new Date();
     const [view, setView] = useState('dayView');
     const [customer, setCustomer] = useState();
-
-    const transitionToAddCustomer = useCallback(
-        () => setView('addCustomer'),
-        []
-    );
 
     const transitionToAddAppointment = useCallback(customer => {
         setCustomer(customer);
         setView('addAppointment');
     }, []);
-
+    const transitionToAddCustomer = useCallback(
+        () => setView('addCustomer'),
+        []
+    );
     const transitionToDayView = useCallback(
         () => setView('dayView'),
         []
@@ -40,12 +33,13 @@ export const App = () => {
 
     switch (view) {
         case 'addCustomer':
-            return (
-                <CustomerForm onSave={transitionToAddAppointment} />
-            );
+            return <CustomerForm onSave={transitionToAddAppointment} />;
         case 'addAppointment':
             return (
-                <AppointmentFormLoader customer={customer} onSave={transitionToDayView} />
+                <AppointmentFormLoader
+                    customer={customer}
+                    onSave={transitionToDayView}
+                />
             );
         default:
             return (
@@ -56,11 +50,10 @@ export const App = () => {
                             id="addCustomer"
                             onClick={transitionToAddCustomer}>
                             Add customer and appointment
-        </button>
+            </button>
                     </div>
-                    <AppointmentsDayViewLoader today={today} />
+                    <AppointmentsDayViewLoader />
                 </React.Fragment>
             );
     }
-
-}
+};
